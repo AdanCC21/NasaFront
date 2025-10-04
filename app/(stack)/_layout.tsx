@@ -23,7 +23,7 @@ const StackLayout = () => {
     screenOptions={{
         headerShadowVisible: true,
         contentStyle: {
-            backgroundColor: '#fff'
+            flex: 1
         },
         headerLeft: ({tintColor,canGoBack}) => (<Ionicons 
         name={canGoBack ? "arrow-back-outline":"menu-outline"} size={26} className='mr-5' 
@@ -34,7 +34,7 @@ const StackLayout = () => {
     >
         <Stack.Screen name="home/index"
         options={{
-            title: "Chat",
+            headerShown:false
         }} />
         <Stack.Screen name="plan/index"
         options={{
@@ -47,6 +47,10 @@ const StackLayout = () => {
             headerStyle:{
                 
             }
+        }} />
+        <Stack.Screen name="chat/index"
+        options={{
+            title: "Chat",
         }} />
     </Stack>
   )

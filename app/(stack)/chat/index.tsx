@@ -10,8 +10,8 @@ const PlanScreen = () => {
   const router = useRouter();
 
   return (
-    <View className='flex-1 bg-blue-950' style={{ paddingTop: safeAreaInsets.top }}>
-      <View className='flex-row items-center px-4 py-3'>
+    <View className='flex-1 bg-blue-950'>
+      <View className='flex-row items-center px-4 py-3' style={{ paddingTop: safeAreaInsets.top }}>
         <TouchableOpacity 
           onPress={() => router.push('/home')}
           className='mr-3'
