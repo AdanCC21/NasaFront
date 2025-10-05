@@ -52,6 +52,11 @@ const StackLayout = () => {
         options={{
             title: "Chat",
         }} />
+        <Stack.Screen name="Resultados/index"
+        options={{
+            title: "Resultados",
+            headerShown:false
+        }} />
     </Stack>
   )
 }
