@@ -17,65 +17,74 @@ const StackLayout = () => {
     }
 
 
-  return (
-    <EventProvider>
-    <Stack
-    screenOptions={{
-        headerShadowVisible: false,
-        contentStyle: {
-            flex: 1,
-            
-        },
-        headerLeft: ({canGoBack}) => (<Ionicons 
-        name={canGoBack ? "chevron-back":"menu"} size={32} className='mr-5' color={"#fff"} 
-            onPress={() => onHeaderLeftClick(canGoBack)}
-        />
-        )
-    }}
-    >
-        <Stack.Screen name="home/index"
-        options={{
-            headerShown:false
-        }} />
-        <Stack.Screen name="plan/index"
-        options={{
-            title: "Plan",
-        }} />
+    return (
+        <EventProvider>
+            <Stack
+                screenOptions={{
+                    headerShadowVisible: false,
+                    contentStyle: {
+                        flex: 1,
 
-        <Stack.Screen name="map/index"
-        options={{
-            title: "Map",
-            headerTransparent: true,
-            headerStyle:{
+                    },
+                    headerLeft: ({ canGoBack }) => (<Ionicons
+                        name={canGoBack ? "chevron-back" : "menu"} size={32} className='mr-5' color={"#fff"}
+                        onPress={() => onHeaderLeftClick(canGoBack)}
+                    />
+                    )
+                }}
+            >
+                <Stack.Screen name="home/index"
+                    options={{
+                        headerShown: false
+                    }} />
+                <Stack.Screen name="plan/index"
+                    options={{
+                        title: "Plan",
+                    }} />
 
-            },
-            headerTitleStyle:{
-                color: '#fff',
-                fontWeight: 'bold',
-                fontSize: 28,
-                
-            }
-        }} />
-        <Stack.Screen name="map/dateHour/index"
-        options={{
-            title: "Date and hour",
-            headerTransparent: true,
-            headerStyle:{
-            },
-            headerTitleStyle:{
-                color: '#fff',
-                fontWeight: 'bold',
-                fontSize: 28,
-                
-            }
-        }} />
-        <Stack.Screen name="chat/index"
-        options={{
-            title: "Chat",
-        }} />
-    </Stack>
-    </EventProvider>
-  )
+                <Stack.Screen name="map/index"
+                    options={{
+                        title: "Map",
+                        headerTransparent: true,
+                        headerStyle: {
+
+                        },
+                        headerTitleStyle: {
+                            color: '#fff',
+                            fontWeight: 'bold',
+                            fontSize: 28,
+
+                        }
+                    }} />
+                <Stack.Screen name="map/dateHour/index"
+                    options={{
+                        title: "Date and hour",
+                        headerTransparent: true,
+                        headerStyle: {
+                        },
+                        headerTitleStyle: {
+                            color: '#fff',
+                            fontWeight: 'bold',
+                            fontSize: 28,
+
+                        }
+                    }} />
+                <Stack.Screen name="chat/index"
+                    options={{
+                        title: "Chat",
+                        headerTitleStyle: { color: '#FFF' },
+                        headerTransparent: true
+                    }} />
+                <Stack.Screen name="historial/index"
+                    options={{
+                        title: "History",
+                        headerTitleStyle: { color: "#FFF" },
+                        headerTransparent: true
+                    }}
+                />
+            </Stack>
+        </EventProvider>
+    )
 }
 
 export default StackLayout
