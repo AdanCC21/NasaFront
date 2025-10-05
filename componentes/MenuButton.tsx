@@ -23,7 +23,7 @@ const MenuButton = React.forwardRef<View, Props>(
         <Ionicons name={icon} size={32} color={`${color}`} style={{ marginRight: 12 }} />
         <View className="">
           <Text className="text-textPrimary text-2xl font-semibold">{title}</Text>
-          <Text className="text-textPrimary text-md">{description}</Text>
+          <Text className="text-textPrimary text-md max-w-64">{description}</Text>
         </View>
         </View>
       </Pressable>

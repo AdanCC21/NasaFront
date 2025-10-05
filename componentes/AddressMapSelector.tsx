@@ -1,13 +1,13 @@
-import React, { useState, useCallback, useRef } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import MapSelector from './MapSelector';
-import AddressInput from './AddressInput';
-import { 
-  AddressMapSelectorProps, 
-  LocationSelectionResult, 
-  MapRegion 
+import React, { useCallback, useRef, useState } from 'react';
+import { Animated, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  AddressMapSelectorProps,
+  LocationSelectionResult,
+  MapRegion
 } from '../types/location';
+import AddressInput from './AddressInput';
+import MapSelector from './MapSelector';
 
 /**
  * Componente híbrido que combina selección por mapa y por dirección
@@ -23,7 +23,7 @@ const AddressMapSelector: React.FC<AddressMapSelectorProps> = ({
   initialRegion,
   showCurrentLocationButton = true,
   showAddressInput = true,
-  placeholder = 'Buscar dirección...',
+  placeholder = 'Search for an address in the map...',
   style,
 }) => {
   // Estados locales

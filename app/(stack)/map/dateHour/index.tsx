@@ -4,63 +4,92 @@ import CustomButton from "@/componentes/CustomButton";
 import DatePicker from "@/componentes/DatePicker";
 import MapWithAddressInput from "@/componentes/MapWithAddressInput";
 import TimeDropdown, { TimePeriod } from "@/componentes/TimeDropdown";
-import { LocationSelectionResult } from "@/types/location";
+import { useEvent } from "@/contexts/EventContext";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useNavigation } from "expo-router";
-import React, { useLayoutEffect, useState } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useLayoutEffect, useState } from "react";
+import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const DateHourScreen = () => {
   const safeArea = useSafeAreaInsets();
   const navigation = useNavigation();
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
-  const [startTime, setStartTime] = useState(""); // Formato HH:mm:ss
-  const [endTime, setEndTime] = useState(""); // Formato HH:mm:ss
+  const { eventData, setDate, setStartTime, setEndTime, getFormattedData } = useEvent();
+  const [selectedDate, setSelectedDateLocal] = useState<Date | undefined>(eventData.date);
+  const [startTime, setStartTimeLocal] = useState(eventData.startTime);
+  const [endTime, setEndTimeLocal] = useState(eventData.endTime);
   const [showHeader, setShowHeader] = useState(true);
 
-  const handleLocationSelect = (location: LocationSelectionResult) => {
-    console.log("Ubicación seleccionada:", {
-      name: location.name,
-      address: location.address,
-      coordinates: location.coordinates,
-    });
-  };
-
-  // Formatear fecha a YYYY-MM-DD
-  const formatDate = (date: Date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
-
-  // Formatear para la API en formato UTC: YYYY-MM-DDThh:mm:ss
-  const formatForAPI = () => {
-    if (!selectedDate || !startTime) {
-      console.log("Faltan datos");
-      return;
+  // Verificar si hay ubicación al montar el componente
+  useEffect(() => {
+    if (!eventData.location) {
+      Alert.alert(
+        "Ubicación requerida",
+        "Primero debes seleccionar una ubicación en el mapa.",
+        [
+          {
+            text: "Volver",
+            onPress: () => router.back(),
+          },
+        ]
+      );
     }
+  }, [eventData.location]);
 
-    const dateStr = formatDate(selectedDate);
-    const timeStart = `${dateStr}T${startTime}`;
-    
-    // Si no hay endTime, usar el mismo día a las 23:59:59
-    const timeEnd = endTime ? `${dateStr}T${endTime}` : `${dateStr}T23:59:59`;
+  // Sincronizar con el contexto cuando cambian los valores locales
+  useEffect(() => {
+    setDate(selectedDate);
+  }, [selectedDate, setDate]);
 
-    console.log("time_start:", timeStart);
-    console.log("end_time:", timeEnd);
+  useEffect(() => {
+    setStartTime(startTime);
+  }, [startTime, setStartTime]);
 
-    // Aquí puedes enviar al backend
-    return { time_start: timeStart, end_time: timeEnd };
-  };
+  useEffect(() => {
+    setEndTime(endTime);
+  }, [endTime, setEndTime]);
+  
+  
+
+  // Ya no necesitamos manejar la selección de ubicación aquí
+  // porque viene del contexto desde la pantalla anterior
+
+  // El formateo ahora se maneja en el contexto con getFormattedData()
 
   const handleContinue = () => {
-    const apiData = formatForAPI();
-    if (apiData) {
-      console.log("Datos para API:", apiData);
-      // Navegar a la siguiente pantalla o enviar al backend
+    const apiData = getFormattedData();
+    if (!apiData) {
+      Alert.alert(
+        "Datos incompletos",
+        "Por favor completa todos los campos: ubicación, fecha y hora de inicio."
+      );
+      return;
     }
+    
+    console.log("Datos completos del evento:", apiData);
+    console.log("\n--- Resumen del Evento ---");
+    console.log(`Ubicación: ${apiData.name}`);
+    console.log(`Dirección: ${apiData.address}`);
+    console.log(`Coordenadas: ${apiData.latitude}, ${apiData.longitude}`);
+    console.log(`Fecha: ${apiData.date}`);
+    console.log(`Hora inicio: ${apiData.time_start}`);
+    console.log(`Hora fin: ${apiData.end_time}`);
+    console.log("-------------------------\n");
+    
+    // Aquí puedes enviar al backend o navegar a la siguiente pantalla
+    Alert.alert(
+      "Datos guardados",
+      `Ubicación: ${apiData.name}\nFecha: ${apiData.date}\nHora: ${apiData.time_start}`,
+      [
+        {
+          text: "OK",
+          onPress: () => {
+            // Navegar a la siguiente pantalla si es necesario
+            // router.push("/(stack)/siguiente-pantalla");
+          },
+        },
+      ]
+    );
   };
 
   // Manejar el scroll para ocultar/mostrar el header
@@ -98,22 +127,35 @@ const DateHourScreen = () => {
       >
         {/* Mapa más pequeño */}
         <View style={styles.mapContainer}>
-          <MapWithAddressInput
-            onLocationSelect={handleLocationSelect}
-            showCurrentLocationButton={false}
-            showAddressInput={false}
-            interactive={false}
-            showSelectedLocation={false}
-            style={{ flex: 1 }}
-          />
-        </View>
-
-        {/* MessageBot */}
-        <View style={styles.messageBotContainer}>
-          <MessageBot
-            imgUrl="Bot.png"
-            message="Perfecto , ahora selecciona la fecha y hora del evento."
-          />
+          {eventData.location ? (
+            <MapWithAddressInput
+              onLocationSelect={() => {}}
+              initialLocation={eventData.location}
+              initialRegion={{
+                latitude: eventData.location.coordinates.latitude,
+                longitude: eventData.location.coordinates.longitude,
+                latitudeDelta: 0.01,
+                longitudeDelta: 0.01,
+              }}
+              showCurrentLocationButton={false}
+              showAddressInput={false}
+              interactive={false}
+              showSelectedLocation={false}
+              style={{ flex: 1 }}
+            />
+          ) : (
+            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 24 }}>
+              <Text style={{ color: '#fff', fontSize: 16 }}>No hay ubicación seleccionada</Text>
+            </View>
+          )}
+          
+          {/* MessageBot superpuesto al mapa */}
+          <View style={styles.messageBotContainer}>
+            <MessageBot
+              imgUrl="Bot.png"
+              message="Perfecto , ahora selecciona la fecha y hora del evento."
+            />
+          </View>
         </View>
 
         {/* Formularios de fecha y hora */}
@@ -122,7 +164,7 @@ const DateHourScreen = () => {
             <Text className="text-white text-2xl font-bold pb-2">Fecha</Text>
             <DatePicker
               value={selectedDate}
-              onChange={setSelectedDate}
+              onChange={setSelectedDateLocal}
               placeholder="Selecciona una fecha"
             />
           </View>
@@ -133,7 +175,7 @@ const DateHourScreen = () => {
             </Text>
             <TimeDropdown
               value={startTime}
-              onSelect={(period: TimePeriod) => setStartTime(period.value)}
+              onSelect={(period: TimePeriod) => setStartTimeLocal(period.value)}
               placeholder="Selecciona período"
             />
           </View>
@@ -174,8 +216,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   messageBotContainer: {
-    paddingHorizontal: 16,
-    marginBottom: 20,
+    position: "absolute",
+    top: 248,
+    left: 16,
+    right: 16,
+    zIndex: 10,
   },
   formContainer: {
     paddingHorizontal: 16,
@@ -185,10 +230,9 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 16,
     justifyContent: "flex-end",
-
     paddingHorizontal: 16,
-    paddingVertical: 24,
-    alignItems: "center",
+    paddingVertical: 48,
+    
   },
 });
 

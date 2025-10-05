@@ -13,6 +13,7 @@ import AddressInput from './AddressInput';
 interface MapWithAddressInputProps {
   onLocationSelect?: (location: LocationSelectionResult) => void;
   initialRegion?: MapRegion;
+  initialLocation?: LocationSelectionResult; // Nueva prop para ubicación inicial
   showCurrentLocationButton?: boolean;
   placeholder?: string;
   style?: object;
@@ -28,22 +29,30 @@ interface MapWithAddressInputProps {
 const MapWithAddressInput: React.FC<MapWithAddressInputProps> = ({
   onLocationSelect,
   initialRegion,
+  initialLocation,
   showCurrentLocationButton = true,
-  placeholder = 'Buscar dirección en el mapa...',
+  placeholder = 'Search for an address in the map...',
   style,
   showAddressInput = true,
   interactive = true,
   showSelectedLocation = true,
 }) => {
-  // Estados locales
-  const [selectedLocation, setSelectedLocation] = useState<LocationSelectionResult | null>(null);
+  // Estados locales - inicializar con initialLocation si existe
+  const [selectedLocation, setSelectedLocation] = useState<LocationSelectionResult | null>(
+    initialLocation || null
+  );
   const [mapRegion, setMapRegion] = useState<MapRegion>(
-    initialRegion || {
+    initialRegion || (initialLocation ? {
+      latitude: initialLocation.coordinates.latitude,
+      longitude: initialLocation.coordinates.longitude,
+      latitudeDelta: 0.01,
+      longitudeDelta: 0.01,
+    } : {
       latitude: 19.4326, // Ciudad de México por defecto
       longitude: -99.1332,
       latitudeDelta: 0.0922,
       longitudeDelta: 0.0421,
-    }
+    })
   );
 
   // Hook personalizado para ubicación
@@ -54,8 +63,14 @@ const MapWithAddressInput: React.FC<MapWithAddressInputProps> = ({
 
   /**
    * Obtiene la ubicación actual del usuario al montar el componente
+   * Solo si no hay una ubicación inicial proporcionada
    */
   useEffect(() => {
+    // Si ya hay una ubicación inicial, no obtener la ubicación actual
+    if (initialLocation) {
+      return;
+    }
+
     const initializeLocation = async () => {
       try {
         const Location = await import('expo-location');
@@ -92,7 +107,7 @@ const MapWithAddressInput: React.FC<MapWithAddressInputProps> = ({
     };
 
     initializeLocation();
-  }, [reverseGeocode, onLocationSelect]);
+  }, [initialLocation, reverseGeocode, onLocationSelect]);
 
   /**
    * Maneja la selección de dirección desde el input
