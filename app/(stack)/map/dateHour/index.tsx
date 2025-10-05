@@ -114,19 +114,21 @@ const DateHourScreen = () => {
     console.log("-------------------------\n");
 
     // Aquí puedes enviar al backend o navegar a la siguiente pantalla
-    Alert.alert(
-      "Data saved",
-      `Location: ${apiData.name}\nDate: ${apiData.date}\nTime: ${apiData.time_start}`,
-      [
-        {
-          text: "OK",
-          onPress: () => {
-            // Navegar a la siguiente pantalla si es necesario
-            router.push("/Resultados");
-          },
-        },
-      ]
-    );
+    // Alert.alert(
+    //   "Data saved",
+    //   `Location: ${apiData.name}\nDate: ${apiData.date}\nTime: ${apiData.time_start}`,
+    //   [
+    //     {
+    //       text: "OK",
+    //       onPress: () => {
+    //         // Navegar a la siguiente pantalla si es necesario
+    //         router.push("/Resultados");
+    //       },
+    //     },
+    //   ]
+    // );
+    router.push("/Resultados");
+
   };
 
   // Manejar el scroll para ocultar/mostrar el header

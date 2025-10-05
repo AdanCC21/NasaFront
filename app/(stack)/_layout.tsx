@@ -81,12 +81,9 @@ const StackLayout = () => {
                     options={{
                         title: "Results",
                         headerTransparent: true,
-                        headerStyle: {
-                        },
                         headerTitleStyle: {
                             color: '#fff',
                             fontWeight: 'bold',
-                            fontSize: 28,
 
                         }
                     }} />
