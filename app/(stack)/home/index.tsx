@@ -12,7 +12,6 @@ export default function HomeScreen() {
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
     >
-      {/* Animated clouds background */}
       <CloudsBackground />
 
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 24 }}>
@@ -41,14 +40,14 @@ export default function HomeScreen() {
             icon="chatbubble-ellipses-sharp"
             color="#0DE200"
             onPress={() => router.push("/chat")}
-            className="mt-2"
+            className="overflow-hidden mt-2"
           />
           <MenuButton
             title="History"
             description="Check your recent searches."
             icon="time-outline"
             color="#1E90FF"
-            onPress={() => router.push("/chat")}
+            onPress={() => router.push("/historial")}
             className="mt-2"
           />
         </View>
