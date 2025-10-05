@@ -8,11 +8,11 @@ export interface TimePeriod {
 }
 
 const TIME_PERIODS: TimePeriod[] = [
-  { label: "Madrugada (00:00 - 05:59)", value: "00:00:00" }, // 12:00 AM - 5:59 AM
-  { label: "Mañana (06:00 - 11:59)", value: "06:00:00" },    // 6:00 AM - 11:59 AM
-  { label: "Mediodía (12:00 - 12:59)", value: "12:00:00" },  // 12:00 PM - 12:59 PM
-  { label: "Tarde (13:00 - 18:59)", value: "13:00:00" },     // 1:00 PM - 6:59 PM
-  { label: "Noche (19:00 - 23:59)", value: "19:00:00" },     // 7:00 PM - 11:59 PM
+  { label: "Morning (00:00 - 05:59)", value: "00:00:00" }, // 12:00 AM - 5:59 AM
+  { label: "Morning (06:00 - 11:59)", value: "06:00:00" },    // 6:00 AM - 11:59 AM
+  { label: "Midday (12:00 - 12:59)", value: "12:00:00" },  // 12:00 PM - 12:59 PM
+  { label: "Afternoon (13:00 - 18:59)", value: "13:00:00" },     // 1:00 PM - 6:59 PM
+  { label: "Night (19:00 - 23:59)", value: "19:00:00" },     // 7:00 PM - 11:59 PM
 ];
 
 interface TimeDropdownProps {

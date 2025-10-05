@@ -66,10 +66,10 @@ export const EventProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     endTime: "",
     plan: "",
     metrics: {
-      temperature: false,
-      precipitation: false,
-      humidity: false,
-      radiation: false,
+      temperature: true,
+      precipitation: true,
+      humidity: true,
+      radiation: true,
     },
   });
 
@@ -94,17 +94,7 @@ export const EventProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   };
 
   const setMetrics = (metrics: { temperature: boolean; precipitation: boolean; humidity: boolean; radiation: boolean }) => {
-    setEventData((prev) => {
-      // Si se activa radiation y antes no estaba activo, desactivar humidity
-      if (metrics.radiation && !prev.metrics.radiation) {
-        return { ...prev, metrics: { ...metrics, humidity: false } };
-      }
-      // Si se activa humidity y antes no estaba activo, desactivar radiation
-      if (metrics.humidity && !prev.metrics.humidity) {
-        return { ...prev, metrics: { ...metrics, radiation: false } };
-      }
-      return { ...prev, metrics };
-    });
+    setEventData((prev) => ({ ...prev, metrics }));
   };
 
   const clearEventData = () => {

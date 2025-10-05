@@ -39,10 +39,10 @@ const DateHourScreen = () => {
   const [endTime, setEndTimeLocal] = useState(eventData.endTime);
   const [plan, setPlanLocal] = useState(eventData.plan);
   const [metrics, setMetricsLocal] = useState(eventData.metrics || {
-    temperature: false,
-    precipitation: false,
-    humidity: false,
-    radiation: false,
+    temperature: true,
+    precipitation: true,
+    humidity: true,
+    radiation: true,
   });
   const [showHeader, setShowHeader] = useState(true);
 
