@@ -43,7 +43,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
 
   const formatDate = (date: Date | undefined) => {
     if (!date) return placeholder;
-    const months = ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"];
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const month = months[date.getMonth()];
     const day = String(date.getDate()).padStart(2, "0");
     return `${day} ${month}`;
@@ -84,11 +84,11 @@ const DatePicker: React.FC<DatePickerProps> = ({
             <View style={styles.modalContent}>
               <View style={styles.modalHeader}>
                 <TouchableOpacity onPress={handleCancel}>
-                  <Text style={styles.cancelButton}>Cancelar</Text>
+                  <Text style={styles.cancelButton}>Cancel</Text>
                 </TouchableOpacity>
-                <Text style={styles.modalTitle}>Selecciona la fecha</Text>
+                <Text style={styles.modalTitle}>Select Date</Text>
                 <TouchableOpacity onPress={handleConfirm}>
-                  <Text style={styles.confirmButton}>Aceptar</Text>
+                  <Text style={styles.confirmButton}>Accept</Text>
                 </TouchableOpacity>
               </View>
               <DateTimePicker
@@ -99,7 +99,7 @@ const DatePicker: React.FC<DatePickerProps> = ({
                 maximumDate={new Date(2030, 11, 31)}
                 minimumDate={new Date(2020, 0, 1)}
                 themeVariant="light"
-                locale="es-ES"
+                locale="en-US"
               />
             </View>
           </View>

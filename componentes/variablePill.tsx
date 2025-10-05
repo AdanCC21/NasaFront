@@ -1,11 +1,13 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
 interface VariablePillProps {
     icon: React.ReactNode;
     texto: string;
     color: string;
     textColor?: string;
+    selected?: boolean;
+    onPress?: () => void;
 }
 
 // Función para aclarar un color hexadecimal
@@ -27,14 +29,30 @@ const lightenColor = (hex: string, percent: number = 30): string => {
   return `#${newR.toString(16).padStart(2, '0')}${newG.toString(16).padStart(2, '0')}${newB.toString(16).padStart(2, '0')}`;
 };
 
-const VariablePill = ({ icon, texto, color, textColor }: VariablePillProps) => {
+const VariablePill = ({ icon, texto, color, textColor = '#fff', selected = false, onPress }: VariablePillProps) => {
   const borderColor = lightenColor(color, 40);
+  
+  // Colores según el estado de selección
+  const backgroundColor = selected ? color : 'rgba(255,255,255,0.2)';
+  const finalTextColor = selected ? textColor : 'rgba(255,255,255,0.6)';
+  const finalBorderColor = selected ? borderColor : 'rgba(255,255,255,0.3)';
 
   return (
-    <View style={[styles.container, { backgroundColor: color, borderColor }]}>
+    <TouchableOpacity 
+      style={[
+        styles.container, 
+        { 
+          backgroundColor, 
+          borderColor: finalBorderColor,
+          opacity: selected ? 1 : 0.7,
+        }
+      ]}
+      onPress={onPress}
+      activeOpacity={0.7}
+    >
       {icon}
-      <Text style={[styles.text, { color: textColor }]}>{texto}</Text>
-    </View>
+      <Text style={[styles.text, { color: finalTextColor }]}>{texto}</Text>
+    </TouchableOpacity>
   )
 }
 

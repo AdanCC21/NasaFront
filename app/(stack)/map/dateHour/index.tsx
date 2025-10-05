@@ -4,35 +4,57 @@ import CustomButton from "@/componentes/CustomButton";
 import DatePicker from "@/componentes/DatePicker";
 import MapWithAddressInput from "@/componentes/MapWithAddressInput";
 import TimeDropdown, { TimePeriod } from "@/componentes/TimeDropdown";
+import VariablePill from "@/componentes/variablePill";
 import { useEvent } from "@/contexts/EventContext";
+import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useNavigation } from "expo-router";
 import React, { useEffect, useLayoutEffect, useState } from "react";
-import { Alert, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const DateHourScreen = () => {
   const safeArea = useSafeAreaInsets();
   const navigation = useNavigation();
-  const { eventData, setDate, setStartTime, setEndTime, getFormattedData } = useEvent();
-  const [selectedDate, setSelectedDateLocal] = useState<Date | undefined>(eventData.date);
+  const {
+    eventData,
+    setDate,
+    setStartTime,
+    setEndTime,
+    setPlan,
+    setMetrics,
+    getFormattedData,
+  } = useEvent();
+  const [selectedDate, setSelectedDateLocal] = useState<Date | undefined>(
+    eventData.date
+  );
   const [startTime, setStartTimeLocal] = useState(eventData.startTime);
   const [endTime, setEndTimeLocal] = useState(eventData.endTime);
+  const [plan, setPlanLocal] = useState(eventData.plan);
+  const [metrics, setMetricsLocal] = useState(eventData.metrics || {
+    temperature: false,
+    precipitation: false,
+    humidity: false,
+    radiation: false,
+  });
   const [showHeader, setShowHeader] = useState(true);
 
   // Verificar si hay ubicación al montar el componente
   useEffect(() => {
     if (!eventData.location) {
-      Alert.alert(
-        "Ubicación requerida",
-        "Primero debes seleccionar una ubicación en el mapa.",
-        [
-          {
-            text: "Volver",
-            onPress: () => router.back(),
-          },
-        ]
-      );
+      Alert.alert("Location required", "First select a location on the map.", [
+        {
+          text: "Back",
+          onPress: () => router.back(),
+        },
+      ]);
     }
   }, [eventData.location]);
 
@@ -48,8 +70,21 @@ const DateHourScreen = () => {
   useEffect(() => {
     setEndTime(endTime);
   }, [endTime, setEndTime]);
-  
-  
+
+  useEffect(() => {
+    setPlan(plan);
+  }, [plan, setPlan]);
+
+  useEffect(() => {
+    setMetrics(metrics);
+  }, [metrics, setMetrics]);
+
+  const toggleMetric = (metric: 'temperature' | 'precipitation' | 'humidity' | 'radiation') => {
+    setMetricsLocal(prev => ({
+      ...prev,
+      [metric]: !prev[metric]
+    }));
+  };
 
   // Ya no necesitamos manejar la selección de ubicación aquí
   // porque viene del contexto desde la pantalla anterior
@@ -60,12 +95,12 @@ const DateHourScreen = () => {
     const apiData = getFormattedData();
     if (!apiData) {
       Alert.alert(
-        "Datos incompletos",
-        "Por favor completa todos los campos: ubicación, fecha y hora de inicio."
+        "Incomplete data",
+        "Please complete all fields: location, date and start time."
       );
       return;
     }
-    
+
     console.log("Datos completos del evento:", apiData);
     console.log("\n--- Resumen del Evento ---");
     console.log(`Ubicación: ${apiData.name}`);
@@ -74,18 +109,20 @@ const DateHourScreen = () => {
     console.log(`Fecha: ${apiData.date}`);
     console.log(`Hora inicio: ${apiData.time_start}`);
     console.log(`Hora fin: ${apiData.end_time}`);
+    console.log(`Plan: ${apiData.plan}`);
+    console.log(`Metrics:`, apiData.metrics);
     console.log("-------------------------\n");
-    
+
     // Aquí puedes enviar al backend o navegar a la siguiente pantalla
     Alert.alert(
-      "Datos guardados",
-      `Ubicación: ${apiData.name}\nFecha: ${apiData.date}\nHora: ${apiData.time_start}`,
+      "Data saved",
+      `Location: ${apiData.name}\nDate: ${apiData.date}\nTime: ${apiData.time_start}`,
       [
         {
           text: "OK",
           onPress: () => {
             // Navegar a la siguiente pantalla si es necesario
-            // router.push("/(stack)/siguiente-pantalla");
+            router.push("/Resultados");
           },
         },
       ]
@@ -127,6 +164,9 @@ const DateHourScreen = () => {
       >
         {/* Mapa más pequeño */}
         <View style={styles.mapContainer}>
+          <Text className="text-white text-2xl font-bold pb-2">
+            Location selected:
+          </Text>
           {eventData.location ? (
             <MapWithAddressInput
               onLocationSelect={() => {}}
@@ -144,16 +184,26 @@ const DateHourScreen = () => {
               style={{ flex: 1 }}
             />
           ) : (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.1)', borderRadius: 24 }}>
-              <Text style={{ color: '#fff', fontSize: 16 }}>No hay ubicación seleccionada</Text>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "rgba(255,255,255,0.1)",
+                borderRadius: 24,
+              }}
+            >
+              <Text style={{ color: "#fff", fontSize: 16 }}>
+                No location selected
+              </Text>
             </View>
           )}
-          
+
           {/* MessageBot superpuesto al mapa */}
           <View style={styles.messageBotContainer}>
             <MessageBot
               imgUrl="Bot.png"
-              message="Perfecto , ahora selecciona la fecha y hora del evento."
+              message="Perfect! Now select the date and time of the event."
             />
           </View>
         </View>
@@ -161,23 +211,79 @@ const DateHourScreen = () => {
         {/* Formularios de fecha y hora */}
         <View style={styles.formContainer}>
           <View>
-            <Text className="text-white text-2xl font-bold pb-2">Fecha</Text>
+            <Text className="text-white text-2xl font-bold pb-2">Date</Text>
             <DatePicker
               value={selectedDate}
               onChange={setSelectedDateLocal}
-              placeholder="Selecciona una fecha"
+              placeholder="Select a date"
             />
           </View>
 
           <View>
             <Text className="text-white text-2xl font-bold pb-2">
-              En que momento del dìa realizaras tus planes?
+              In what time period will you be making your plans?
             </Text>
             <TimeDropdown
               value={startTime}
               onSelect={(period: TimePeriod) => setStartTimeLocal(period.value)}
-              placeholder="Selecciona período"
+              placeholder="Select time period"
             />
+          </View>
+
+          <View>
+            <Text className="text-white text-2xl font-bold pb-2">
+              Tell me about your plan!
+            </Text>
+            <TextInput
+              style={styles.textInput}
+              value={plan}
+              onChangeText={setPlanLocal}
+              placeholder="Describe your plan here..."
+              placeholderTextColor="rgba(255,255,255,0.5)"
+              multiline
+              numberOfLines={4}
+              textAlignVertical="top"
+            />
+          </View>
+
+          <View>
+            <Text className="text-white text-2xl font-bold pb-2">
+                What metrics do you want to include?
+            </Text>
+            <View style={styles.metricsContainer}>
+              <VariablePill
+                icon={<Ionicons name="thermometer" size={20} color={metrics.temperature ? "#fff" : "rgba(255,255,255,0.6)"} />}
+                texto="Temperature"
+                color="#FF6B6B"
+                textColor="#fff"
+                selected={metrics.temperature}
+                onPress={() => toggleMetric('temperature')}
+              />
+              <VariablePill
+                icon={<Ionicons name="water" size={20} color={metrics.precipitation ? "#fff" : "rgba(255,255,255,0.6)"} />}
+                texto="Precipitation"
+                color="#0077FF"
+                textColor="#fff"
+                selected={metrics.precipitation}
+                onPress={() => toggleMetric('precipitation')}
+              />
+              <VariablePill
+                icon={<Ionicons name="cloud" size={20} color={metrics.humidity ? "#fff" : "rgba(255,255,255,0.6)"} />}
+                texto="Humidity"
+                color="#95E1D3"
+                textColor="#fff"
+                selected={metrics.humidity}
+                onPress={() => toggleMetric('humidity')}
+              />
+              <VariablePill
+                icon={<Ionicons name="sunny" size={20} color={metrics.radiation ? "#fff" : "rgba(255,255,255,0.6)"} />}
+                texto="Solar Radiation"
+                color="#aa0000"
+                textColor="#fff"
+                selected={metrics.radiation}
+                onPress={() => toggleMetric('radiation')}
+              />
+            </View>
           </View>
         </View>
 
@@ -194,7 +300,7 @@ const DateHourScreen = () => {
           <CustomButton
             icon="send"
             iconPosition="right"
-            children="Enviar"
+            children="Send"
             color="#4684FF"
             onPress={handleContinue}
             className="mt-2"
@@ -232,7 +338,21 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
     paddingHorizontal: 16,
     paddingVertical: 48,
-    
+  },
+  textInput: {
+    backgroundColor: "rgba(255,255,255,0.2)",
+    borderRadius: 12,
+    padding: 16,
+    color: "#fff",
+    fontSize: 16,
+    minHeight: 100,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.3)",
+  },
+  metricsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 12,
   },
 });
 

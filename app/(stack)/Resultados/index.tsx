@@ -162,9 +162,7 @@ const ResultadosScreen = () => {
                 <Ionicons name="arrow-back" size={28} color="white" />
               </TouchableOpacity>
               <Text className='text-white text-2xl font-bold'>Results</Text>
-              <TouchableOpacity 
-                //onPress={() => router.push('/home')}
-              >
+              <TouchableOpacity>
                 <Feather name="download" size={28} color="white" />
               </TouchableOpacity>
             </View>

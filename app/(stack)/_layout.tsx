@@ -77,6 +77,19 @@ const StackLayout = () => {
                         headerTransparent: true
                     }}
                 />
+                <Stack.Screen name="Resultados/index"
+                    options={{
+                        title: "Results",
+                        headerTransparent: true,
+                        headerStyle: {
+                        },
+                        headerTitleStyle: {
+                            color: '#fff',
+                            fontWeight: 'bold',
+                            fontSize: 28,
+
+                        }
+                    }} />
             </Stack>
         </EventProvider>
     )
