@@ -50,14 +50,6 @@ export default function HomeScreen() {
             onPress={() => router.push("/historial")}
             className="mt-2"
           />
-          <MenuButton
-            title="Results"
-            description="Check your recent searches."
-            icon="time-outline"
-            color="#1E90FF"
-            onPress={() => router.push("/Resultados")}
-            className="mt-2"
-          />
         </View>
       </View>
     </LinearGradient>
