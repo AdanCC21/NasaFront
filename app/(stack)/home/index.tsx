@@ -1,5 +1,5 @@
-import MenuButton from "@/componentes/MenuButton";
 import CloudsBackground from "@/componentes/CloudsBackground";
+import MenuButton from "@/componentes/MenuButton";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { Text, View } from "react-native";
@@ -31,22 +31,22 @@ export default function HomeScreen() {
             title="Mapa"
             description="Explora ubicaciones visualmente."
             icon="location-sharp"
-            color="#1E90FF"
+            color="#5074C9"
             onPress={() => router.push("/map")}
             className="mt-2"
           />
           <MenuButton
             title="Chat con Ramon"
-            description="lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod."
+            description="Habla con Ramón para preguntarle sobre el clima."
             icon="chatbubble-ellipses-sharp"
-            color="#1E90FF"
+            color="#0D8200"
             onPress={() => router.push("/chat")}
             className="mt-2"
           />
           <MenuButton
             title="Historial"
             description="Consulta tus busquedas recientes"
-            icon="chatbubble"
+            icon="time-outline"
             color="#1E90FF"
             onPress={() => router.push("/chat")}
             className="mt-2"

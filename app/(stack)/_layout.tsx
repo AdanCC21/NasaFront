@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { DrawerActions } from '@react-navigation/native';
 import { router, Stack, useNavigation } from 'expo-router';
 import React from 'react';
+import { EventProvider } from '@/contexts/EventContext';
 
 const StackLayout = () => {
 
@@ -19,9 +20,10 @@ const StackLayout = () => {
 
 
   return (
+    <EventProvider>
     <Stack
     screenOptions={{
-        headerShadowVisible: true,
+        headerShadowVisible: false,
         contentStyle: {
             flex: 1,
             
@@ -61,7 +63,6 @@ const StackLayout = () => {
             title: "Fecha y hora",
             headerTransparent: true,
             headerStyle:{
-
             },
             headerTitleStyle:{
                 color: '#fff',
@@ -75,6 +76,7 @@ const StackLayout = () => {
             title: "Chat",
         }} />
     </Stack>
+    </EventProvider>
   )
 }
 

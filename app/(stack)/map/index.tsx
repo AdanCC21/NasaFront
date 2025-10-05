@@ -2,15 +2,20 @@ import MessageBot from "@/componentes/chat/MessageBot";
 import CloudsBackground from "@/componentes/CloudsBackground";
 import CustomButton from "@/componentes/CustomButton";
 import MapWithAddressInput from "@/componentes/MapWithAddressInput";
+import { useEvent } from "@/contexts/EventContext";
 import { LocationSelectionResult } from "@/types/location";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import React from "react";
-import { StyleSheet, View } from "react-native";
+import React, { useState } from "react";
+import { Alert, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const MapScreen = () => {
   const safeArea = useSafeAreaInsets();
+  const { setLocation, eventData } = useEvent();
+  const [currentLocation, setCurrentLocation] = useState<LocationSelectionResult | null>(
+    eventData.location
+  );
 
   /**
    * Maneja la selección de ubicación
@@ -21,6 +26,22 @@ const MapScreen = () => {
       address: location.address,
       coordinates: location.coordinates,
     });
+    setCurrentLocation(location);
+    setLocation(location);
+  };
+
+  /**
+   * Maneja el botón de continuar
+   */
+  const handleContinue = () => {
+    if (!currentLocation) {
+      Alert.alert(
+        "Ubicación requerida",
+        "Por favor selecciona una ubicación en el mapa antes de continuar."
+      );
+      return;
+    }
+    router.push("/(stack)/map/dateHour");
   };
 
   return (
@@ -51,7 +72,7 @@ const MapScreen = () => {
           <CustomButton
             children="Quiero seleccionar esta ubicación"
             color="#4684FF"
-            onPress={() => router.push("/(stack)/map/dateHour")}
+            onPress={handleContinue}
             className="mt-2 "
           />
         </View>
