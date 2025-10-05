@@ -23,7 +23,7 @@ const PlanScreen = () => {
   const [message, setMessageText] = useState('');
 
   useEffect(() => {
-    let botMessage: MessageItemType = { id: 1, author: 'Ramon', content: "Hi, welcome ✌️, please tell me your plans and how can i help you 😺." }
+    let botMessage: MessageItemType = { id: messageList.length, author: 'Ramon', content: "Hi, welcome ✌️, please tell me your plans and how can i help you 😺." }
 
     if (eventData.location?.address) {
       botMessage.content = `Hi ✌️, This is your place : ${eventData.location.address} 🗺️. your day : ${getFormattedData()?.date} 📅, and your start time ${eventData.startTime} 🕑`
@@ -39,7 +39,7 @@ const PlanScreen = () => {
     const newItem: MessageItemType = { id: messageList.length + 1, author: 'User', content: message }
 
     // Respuesta del bot
-    let botMessage: MessageItemType = { id: messageList.length + 2, author: 'Ramon', content: "Oh, i'm so sorry 😿, for now i can't help you with that, please try again later." }
+    let botMessage: MessageItemType = { id: messageList.length + 2, author: 'Ramon', content: "I don't think it's a good idea to go fishing, there will be strong winds and a high probability of rain. 😿" }
 
     // Empujamos el item
     let list = [...messageList];
