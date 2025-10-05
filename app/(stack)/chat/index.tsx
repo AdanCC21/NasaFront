@@ -8,6 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 // Asegúrate de que la ruta a tu imagen sea correcta
 import Ramon from '@/assets/images/Ramon.png'
+import { useHeaderHeight } from '@react-navigation/elements';
 
 // --- Tipos ---
 type MessageItemType = {
@@ -44,6 +45,8 @@ const PlanScreen = () => {
     }
   };
 
+  const headerHeight = useHeaderHeight();
+
   return (
     <LinearGradient
       colors={['#5074C9', '#94A8D8']}
@@ -52,15 +55,7 @@ const PlanScreen = () => {
       end={{ x: 0, y: 1 }}>
       <CloudsBackground />
 
-      {/* HEADER */}
-      <View className='flex flex-row items-center px-4 py-3' style={{ paddingTop: safeAreaInsets.top }}>
-        <TouchableOpacity
-          onPress={() => router.push('/home')}
-          className='mr-3'
-        >
-          <Ionicons name="arrow-back" size={28} color="white" />
-        </TouchableOpacity>
-        <Text className=' text-white text-2xl font-bold absolute left-1/2 bottom-1/2 -translate-x-[20%]'>Chat</Text>
+      <View style={{ height: headerHeight }}>
       </View>
 
       <FlatList
@@ -68,22 +63,20 @@ const PlanScreen = () => {
         data={messageList}
         keyExtractor={item => String(item.id)}
         renderItem={({ item, index }) => <MessageItem item={item} index={index} />}
+        contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end' }}
       />
 
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.inputContainerWrapper}
-      >
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}      >
         <View style={styles.inputContent}>
           <View className='flex-row items-center gap-x-2 mx-2 mt-2'>
-            <Ionicons name="information-circle-outline" size={14} color="black" />
-            <Text className='text-gray-500 text-xs'>Specify details such as location, time and day.</Text>
+            <Ionicons name="information-circle-outline" size={14} color="white" />
+            <Text className='text-gray-200 text-xs'>Specify details such as location, time and day.</Text>
           </View>
-          <View
-            style={{ flexDirection: 'row', alignItems: 'center', width: '100%' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%' }}>
             <TextInput
               style={[styles.input, { flex: 1 }]}
-              placeholder="Escribe un mensaje..."
+              placeholder="Write a message"
               placeholderTextColor="#9CA3AF"
               value={message}
               onChangeText={setMessageText}
@@ -93,7 +86,7 @@ const PlanScreen = () => {
             <TouchableOpacity
               style={[
                 styles.button,
-                { backgroundColor: message.trim() ? '#2563EB' : '#9CA3AF' }
+                { backgroundColor: message.trim() ? '#000000CC' : '#00000066' }
               ]}
               onPress={handleSend}
               disabled={!message.trim()}
@@ -103,7 +96,7 @@ const PlanScreen = () => {
             </TouchableOpacity>
           </View>
         </View>
-        <View style={{ height: safeAreaInsets.bottom, backgroundColor: '#fff' }} />
+        <View style={{ height: safeAreaInsets.bottom, }} />
       </KeyboardAvoidingView>
     </LinearGradient>
   )
@@ -132,11 +125,6 @@ const MessageItem = ({ item, index }: any) => (
 )
 
 const styles = StyleSheet.create({
-  inputContainerWrapper: {
-    backgroundColor: '#fff',
-    borderTopWidth: 1,
-    borderTopColor: '#D1D5DB',
-  },
   inputContent: {
     flexDirection: 'column',
     paddingHorizontal: 10,

@@ -12,7 +12,6 @@ export default function HomeScreen() {
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
     >
-      {/* Animated clouds background */}
       <CloudsBackground />
 
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 24 }}>
@@ -48,7 +47,7 @@ export default function HomeScreen() {
             description="Consulta tus busquedas recientes"
             icon="chatbubble"
             color="#1E90FF"
-            onPress={() => router.push("/chat")}
+            onPress={() => router.push("/historial")}
             className="mt-2"
           />
         </View>

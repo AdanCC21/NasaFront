@@ -146,7 +146,7 @@ const DateHourScreen = () => {
             iconPosition="left"
             children="Chat"
             color="#4684FF"
-            onPress={() => router.push("/(stack)/map")}
+            onPress={() => router.push("/(stack)/chat")}
             className="mt-2"
           />
           <CustomButton
