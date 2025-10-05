@@ -24,9 +24,9 @@ export default function InputForm({ callback }: Prompt) {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={styles.container}
     >
-      <View className='flex-row items-center gap-4 mx-2 mt-2'>
-        <Ionicons name="information-circle-outline" size={24} color="black" />
-        <Text className='text-gray-500 text-xs self-start'>Especifica detalles como lugar, hora y dia</Text>
+      <View className='flex-row items-center gap-x-2 mx-2 mt-2'>
+        <Ionicons name="information-circle-outline" size={14} color="black" />
+        <Text className='text-gray-500 text-xs'>Specify details such as location, time and day.</Text>
       </View>
       <View
         style={{ flexDirection: 'row', alignItems: 'center', width: '100%' }}>
@@ -57,6 +57,7 @@ export default function InputForm({ callback }: Prompt) {
 
 const styles = StyleSheet.create({
   container: {
+    flex:1,
     flexDirection: 'column',
     paddingHorizontal: 10,
     paddingTop: 5,
