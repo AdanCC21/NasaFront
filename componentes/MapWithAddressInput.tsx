@@ -31,7 +31,7 @@ const MapWithAddressInput: React.FC<MapWithAddressInputProps> = ({
   initialRegion,
   initialLocation,
   showCurrentLocationButton = true,
-  placeholder = 'Buscar dirección en el mapa...',
+  placeholder = 'Search for an address in the map...',
   style,
   showAddressInput = true,
   interactive = true,

@@ -7,7 +7,7 @@ import { Text, View } from "react-native";
 export default function HomeScreen() {
   return (
     <LinearGradient
-      colors={['#5074C9', '#94A8D8']}
+      colors={["#5074C9", "#94A8D8"]}
       style={{ flex: 1 }}
       start={{ x: 0, y: 0 }}
       end={{ x: 0, y: 1 }}
@@ -28,24 +28,24 @@ export default function HomeScreen() {
           className="w-auto items-center h-auto p-8 px-4 rounded-xl mt-4"
         >
           <MenuButton
-            title="Mapa"
-            description="Explora ubicaciones visualmente."
+            title="Map"
+            description="Explore locations visually."
             icon="location-sharp"
             color="#5074C9"
             onPress={() => router.push("/map")}
             className="mt-2"
           />
           <MenuButton
-            title="Chat con Ramon"
-            description="Habla con Ramón para preguntarle sobre el clima."
+            title="Chat with Ramon"
+            description="Talk to Ramon about the weather."
             icon="chatbubble-ellipses-sharp"
-            color="#0D8200"
+            color="#0DE200"
             onPress={() => router.push("/chat")}
             className="mt-2"
           />
           <MenuButton
-            title="Historial"
-            description="Consulta tus busquedas recientes"
+            title="History"
+            description="Check your recent searches."
             icon="time-outline"
             color="#1E90FF"
             onPress={() => router.push("/chat")}

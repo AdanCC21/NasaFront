@@ -57,7 +57,7 @@ const MapScreen = () => {
           <MapWithAddressInput
             onLocationSelect={handleLocationSelect}
             showCurrentLocationButton={true}
-            placeholder="Buscar dirección en el mapa..."
+            placeholder="Search for an address in the map..."
             style={{ flex: 1 }}
           />
         </View>
@@ -65,12 +65,12 @@ const MapScreen = () => {
         <View style={styles.bottomContainer}>
           <MessageBot
             imgUrl="Bot.png"
-            message="Hola, bienvenido 👋, Primero seleccionemos el lugar del evento. Pon un pin donde quieras hacer el evento y ajusta el radio que quieras abarcar."
+            message="Hi, welcome! 👋, First select the event location. Drop a pin where you want to host the event and adjust the radius to cover the area you want to include."
           />
         </View>
         <View className="w-full items-center pb-8">
           <CustomButton
-            children="Quiero seleccionar esta ubicación"
+            children="Select this location"
             color="#4684FF"
             onPress={handleContinue}
             className="mt-2 "

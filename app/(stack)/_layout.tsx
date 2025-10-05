@@ -1,8 +1,8 @@
+import { EventProvider } from '@/contexts/EventContext';
 import { Ionicons } from '@expo/vector-icons';
 import { DrawerActions } from '@react-navigation/native';
 import { router, Stack, useNavigation } from 'expo-router';
 import React from 'react';
-import { EventProvider } from '@/contexts/EventContext';
 
 const StackLayout = () => {
 
@@ -46,7 +46,7 @@ const StackLayout = () => {
 
         <Stack.Screen name="map/index"
         options={{
-            title: "Mapa",
+            title: "Map",
             headerTransparent: true,
             headerStyle:{
 
@@ -60,7 +60,7 @@ const StackLayout = () => {
         }} />
         <Stack.Screen name="map/dateHour/index"
         options={{
-            title: "Fecha y hora",
+            title: "Date and hour",
             headerTransparent: true,
             headerStyle:{
             },
