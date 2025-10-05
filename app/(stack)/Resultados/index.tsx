@@ -35,21 +35,21 @@ const ResultadosScreen = () => {
 
   // Función para determinar la condición climática basada en los datos
   const getWeatherCondition = (data: WeatherData) => {
-    if (data.precipitation >= 70) return 'lluvioso';
-    if (data.precipitation >= 30) return 'nublado';
-    if (data.solarRadiation > 600 && data.precipitation < 20) return 'soleado';
-    return 'parcialmente nublado';
+    if (data.precipitation >= 70) return 'Rainy';
+    if (data.precipitation >= 30) return 'Cloudy';
+    if (data.solarRadiation > 600 && data.precipitation < 20) return 'Sunny';
+    return 'Partly Cloudy';
   };
 
   // Función para obtener ícono según la condición determinada
   const getWeatherIcon = (data: WeatherData) => {
     const condition = getWeatherCondition(data);
     const conditions: { [key: string]: any } = {
-      'soleado': 'sunny',
-      'nublado': 'cloudy',
-      'lluvioso': 'rainy',
-      'tormentoso': 'thunderstorm',
-      'parcialmente nublado': 'partly-sunny'
+      'Sunny': 'sunny',
+      'Cloudy': 'cloudy',
+      'Rainy': 'rainy',
+      'Stormy': 'thunderstorm',
+      'Partly Cloudy': 'partly-sunny'
     };
     return conditions[condition] || 'cloud';
   };
@@ -79,10 +79,10 @@ const ResultadosScreen = () => {
 
   // Función para obtener el nivel de radiación solar como texto
   const getSolarRadiationLevel = (radiation: number) => {
-    if (radiation >= 1000) return 'Muy Alta';
-    if (radiation >= 600) return 'Alta';
-    if (radiation >= 300) return 'Moderada';
-    return 'Baja';
+    if (radiation >= 1000) return 'Very High';
+    if (radiation >= 600) return 'High';
+    if (radiation >= 300) return 'Moderate';
+    return 'Low';
   };
 
   // Función para obtener ícono de viento según velocidad
@@ -104,13 +104,13 @@ const ResultadosScreen = () => {
   // Función para obtener el fondo según los datos climáticos
   const getWeatherBackground = (data: WeatherData) => {
     const condition = getWeatherCondition(data);
-    if (condition === 'lluvioso') {
+    if (condition === 'Rainy') {
       return <RainyBackground />;
     }
-    else if (condition === 'soleado') {
+    else if (condition === 'Sunny') {
       return <SunnyBackground />;
     }
-    else if (condition === 'parcialmente nublado') {
+    else if (condition === 'Partly Cloudy') {
       return <CloudsBackground />;
     }
     else {
@@ -121,13 +121,13 @@ const ResultadosScreen = () => {
   // Función para obtener el color del ícono principal según los datos
   const getIconColor = (data: WeatherData) => {
     const condition = getWeatherCondition(data);
-    if (condition === 'lluvioso') {
+    if (condition === 'Rainy') {
       return '#E5E7EB'; // Gris claro para lluvia
     }
-    if (condition === 'soleado') {
+    if (condition === 'Sunny') {
       return '#FDE047'; // Amarillo para soleado
     }
-    if (condition === 'nublado') {
+    if (condition === 'Cloudy') {
       return '#9CA3AF'; // Gris para nublado
     }
     return 'white'; // Color por defecto
@@ -161,7 +161,7 @@ const ResultadosScreen = () => {
               >
                 <Ionicons name="arrow-back" size={28} color="white" />
               </TouchableOpacity>
-              <Text className='text-white text-2xl font-bold'>Chat</Text>
+              <Text className='text-white text-2xl font-bold'>Results</Text>
               <TouchableOpacity 
                 //onPress={() => router.push('/home')}
               >
@@ -177,24 +177,24 @@ const ResultadosScreen = () => {
 
         <View className="mt-4 flex-row flex-wrap justify-center px-4 max-w-[100%] w-full">
           <WeatherCard
-            title="Precipitación"
+            title="Precipitation"
             value={`${weatherData.precipitation}%`}
             iconName={getPrecipitationIcon(weatherData.precipitation)}
           />
           <WeatherCard
-            title="Humedad"
+            title="Humidity"
             value={`${weatherData.humidity}%`}
             iconName={getHumidityIcon(weatherData.humidity)}
           />
           
           <WeatherCard
-            title="Radiación Solar"
+            title="Solar Radiation"
             value={`${weatherData.solarRadiation} W/m² (${getSolarRadiationLevel(weatherData.solarRadiation)})`}
             iconName={getSolarRadiationIcon(weatherData.solarRadiation)}
           />
           
           <View className="w-[45%] bg-white rounded-2xl p-3 m-1 border border-white/20" style={{backgroundColor: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.2)'}}>
-            <Text className="text-xs text-slate-300 text-center mb-1">Velocidad del Viento</Text>
+            <Text className="text-xs text-slate-300 text-center mb-1">Wind Speed</Text>
             <View className="items-center mb-2">
               {typeof getWindIcon(weatherData.windSpeed) === 'string' ? (
                 <Ionicons name={getWindIcon(weatherData.windSpeed) as any} size={32} color="white" />
@@ -206,7 +206,7 @@ const ResultadosScreen = () => {
           </View>
           
           <View className="w-[92%] bg-black/20 rounded-2xl p-3 m-1 border border-white/20" style={{backgroundColor: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.2)'}}>
-            <Text className="text-2xl text-slate-300 text-center">Recomendaciones</Text>
+            <Text className="text-2xl text-slate-300 text-center">Recommendations</Text>
             <View className="items-center my-1">
               <Text className='text-white text-2xl font-bold'>{}</Text>
             </View>
