@@ -10,7 +10,7 @@ interface Props {
 
 // Mapa de imágenes disponibles
 const imageMap: { [key: string]: any } = {
-    'Bot.png': require('../../assets/images/Bot.png'),
+    'Bot.png': require('../../assets/images/Ramon.png'),
     // Agrega aquí más imágenes según las necesites
     // 'User.png': require('../../assets/images/User.png'),
     // 'Avatar.png': require('../../assets/images/Avatar.png'),

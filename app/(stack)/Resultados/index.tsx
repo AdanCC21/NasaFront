@@ -4,7 +4,6 @@ import RainyBackground from '@/componentes/RainyBackground';
 import SunnyBackground from '@/componentes/sunny';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import Entypo from '@expo/vector-icons/Entypo';
-import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -228,15 +227,9 @@ const ResultadosScreen = () => {
     <View className='flex-1 bg-blue-900'>
       {weatherData && getWeatherBackground(weatherData)}
 
-      <View className='flex-row items-center justify-between px-4 py-3' style={{ paddingTop: safeAreaInsets.top }}>
-              <TouchableOpacity 
-                onPress={() => router.push('/home')}
-              >
-                <Ionicons name="arrow-back" size={28} color="white" />
-              </TouchableOpacity>
-              <Text className='text-white text-2xl font-bold'>Results</Text>
-              <TouchableOpacity 
-                //onPress={() => router.push('/home')}
+      <View className='flex-row items-center justify-end px-4 py-3' style={{ paddingTop: safeAreaInsets.top }}>
+
+              <TouchableOpacity
               >
                 <Feather name="download" size={28} color="white" />
               </TouchableOpacity>

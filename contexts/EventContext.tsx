@@ -1,5 +1,5 @@
 import { LocationSelectionResult } from "@/types/location";
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, ReactNode, useContext, useState } from "react";
 
 /**
  * Interface para los datos del evento
@@ -9,6 +9,13 @@ export interface EventData {
   date: Date | undefined;
   startTime: string; // Formato HH:mm:ss
   endTime: string; // Formato HH:mm:ss
+  plan: string; // Descripción del plan
+  metrics: {
+    temperature: boolean;
+    precipitation: boolean;
+    humidity: boolean;
+    radiation: boolean;
+  };
 }
 
 /**
@@ -20,6 +27,8 @@ interface EventContextType {
   setDate: (date: Date | undefined) => void;
   setStartTime: (time: string) => void;
   setEndTime: (time: string) => void;
+  setPlan: (plan: string) => void;
+  setMetrics: (metrics: { temperature: boolean; precipitation: boolean; humidity: boolean; radiation: boolean }) => void;
   clearEventData: () => void;
   getFormattedData: () => FormattedEventData | null;
 }
@@ -35,6 +44,13 @@ export interface FormattedEventData {
   date: string; // YYYY-MM-DD
   time_start: string; // YYYY-MM-DDThh:mm:ss
   end_time: string; // YYYY-MM-DDThh:mm:ss
+  plan: string; // Descripción del plan
+  metrics: {
+    temperature: boolean;
+    precipitation: boolean;
+    humidity: boolean;
+    radiation: boolean;
+  };
 }
 
 const EventContext = createContext<EventContextType | undefined>(undefined);
@@ -48,6 +64,13 @@ export const EventProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     date: undefined,
     startTime: "",
     endTime: "",
+    plan: "",
+    metrics: {
+      temperature: true,
+      precipitation: true,
+      humidity: true,
+      radiation: true,
+    },
   });
 
   const setLocation = (location: LocationSelectionResult) => {
@@ -66,12 +89,27 @@ export const EventProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     setEventData((prev) => ({ ...prev, endTime: time }));
   };
 
+  const setPlan = (plan: string) => {
+    setEventData((prev) => ({ ...prev, plan }));
+  };
+
+  const setMetrics = (metrics: { temperature: boolean; precipitation: boolean; humidity: boolean; radiation: boolean }) => {
+    setEventData((prev) => ({ ...prev, metrics }));
+  };
+
   const clearEventData = () => {
     setEventData({
       location: null,
       date: undefined,
       startTime: "",
       endTime: "",
+      plan: "",
+      metrics: {
+        temperature: false,
+        precipitation: false,
+        humidity: false,
+        radiation: false,
+      },
     });
   };
 
@@ -103,6 +141,8 @@ export const EventProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       date: dateStr,
       time_start: timeStart,
       end_time: timeEnd,
+      plan: eventData.plan,
+      metrics: eventData.metrics,
     };
   };
 
@@ -114,6 +154,8 @@ export const EventProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         setDate,
         setStartTime,
         setEndTime,
+        setPlan,
+        setMetrics,
         clearEventData,
         getFormattedData,
       }}
