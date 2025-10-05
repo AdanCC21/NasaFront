@@ -46,6 +46,9 @@ const DateHourScreen = () => {
   });
   const [showHeader, setShowHeader] = useState(true);
 
+  // Validar si el botón de chat debe estar habilitado
+  const isChatEnabled = selectedDate !== undefined && startTime !== undefined && startTime !== '';
+
   // Verificar si hay ubicación al montar el componente
   useEffect(() => {
     if (!eventData.location) {
@@ -298,6 +301,7 @@ const DateHourScreen = () => {
             color="#4684FF"
             onPress={() => router.push("/(stack)/chat")}
             className="mt-2"
+            disabled={!isChatEnabled}
           />
           <CustomButton
             icon="send"

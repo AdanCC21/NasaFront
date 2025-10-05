@@ -11,6 +11,7 @@ interface Props extends PressableProps {
     iconPosition?: 'left' | 'right';
     iconSize?: number;
     iconColor?: string;
+    disabled?: boolean;
 }
 
 const CustomButton = React.forwardRef<View, Props>(
@@ -25,6 +26,7 @@ const CustomButton = React.forwardRef<View, Props>(
         iconPosition = 'left',
         iconSize = 20,
         iconColor,
+        disabled = false,
         ...restProps
     }, ref) => {
 
@@ -56,9 +58,11 @@ const CustomButton = React.forwardRef<View, Props>(
             return (
                 <Pressable
                     className={`p-3 ${className}`}
-                    onPress={onPress}
-                    onLongPress={onLongPress}
+                    onPress={disabled ? undefined : onPress}
+                    onLongPress={disabled ? undefined : onLongPress}
                     ref={ref}
+                    disabled={disabled}
+                    style={{ opacity: disabled ? 0.5 : 1 }}
                     {...restProps}
                 >
                     <View style={styles.contentContainer}>
@@ -76,11 +80,12 @@ const CustomButton = React.forwardRef<View, Props>(
 
         return (
             <Pressable
-                style={[styles.button, { backgroundColor, borderColor }, className && {}]}
+                style={[styles.button, { backgroundColor, borderColor, opacity: disabled ? 0.5 : 1 }, className && {}]}
                 className={className}
-                onPress={onPress}
-                onLongPress={onLongPress}
+                onPress={disabled ? undefined : onPress}
+                onLongPress={disabled ? undefined : onLongPress}
                 ref={ref}
+                disabled={disabled}
                 {...restProps}
             >
                 <View style={styles.contentContainer}>

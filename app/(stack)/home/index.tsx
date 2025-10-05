@@ -17,7 +17,7 @@ export default function HomeScreen() {
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 24 }}>
         <View style={{ alignItems: "center", justifyContent: "center" }}>
           <Text className="text-white text-4xl text-center font-bold">
-            Will it rain on my parade?
+            Hacka Cloud
           </Text>
           <Text className="text-white text-xl text-center">Hackamoles 2</Text>
         </View>
