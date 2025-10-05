@@ -1,28 +1,37 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Dimensions, KeyboardAvoidingView, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-export default function InputForm() {
+type Prompt = {
+  callback: (message: string) => void
+}
+
+const { width, height } = Dimensions.get('window');
+
+export default function InputForm({ callback }: Prompt) {
   const [message, setMessage] = useState('');
+
 
   const handleSend = () => {
     if (message.trim()) {
-      // Aquí se manejará el envío del mensaje
-      console.log('Mensaje enviado:', message);
+      callback(message)
       setMessage('');
     }
   };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+    >
       <View className='flex-row items-center gap-4 mx-2 mt-2'>
-      <Ionicons name="information-circle-outline" size={24} color="black" />
-      <Text className='text-gray-500 text-xs self-start'>Especifica detalles como lugar, hora y dia</Text>
-
+        <Ionicons name="information-circle-outline" size={24} color="black" />
+        <Text className='text-gray-500 text-xs self-start'>Especifica detalles como lugar, hora y dia</Text>
       </View>
-      <View style={{ flexDirection: 'row', alignItems: 'center', width: '100%' }}>
+      <View
+        style={{ flexDirection: 'row', alignItems: 'center', width: '100%' }}>
         <TextInput
-          style={[styles.input, { width: '100%' }]}
+          style={[styles.input, { flex: 1 }]}
           placeholder="Escribe un mensaje..."
           placeholderTextColor="#9CA3AF"
           value={message}
@@ -42,21 +51,24 @@ export default function InputForm() {
           <Text style={styles.buttonText}>➤</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'column',
-    padding: 16,
+    paddingHorizontal: 10,
+    paddingTop: 5,
     backgroundColor: '#fff',
     borderTopWidth: 1,
     borderTopColor: '#D1D5DB',
     gap: 12,
     bottom: 0,
     position: 'absolute',
-    width:'100%',
+    width: '100%',
+    minHeight: height * .15,
+    borderRadius: 12,
     zIndex: 1000,
   },
   input: {

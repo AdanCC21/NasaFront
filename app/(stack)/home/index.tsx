@@ -37,11 +37,11 @@ export default function HomeScreen() {
           />
           <MenuButton
             title="Chat con Ramon"
-            description="lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod."
+            description="Hablanos sobre tus planes"
             icon="chatbubble-ellipses-sharp"
             color="#1E90FF"
             onPress={() => router.push("/chat")}
-            className="mt-2"
+            className="overflow-hidden mt-2"
           />
           <MenuButton
             title="Historial"
