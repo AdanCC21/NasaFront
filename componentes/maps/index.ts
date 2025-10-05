@@ -8,6 +8,9 @@
 // Componentes
 export { default as MapSelector } from '../MapSelector';
 export { default as LocationPreview } from '../LocationPreview';
+export { default as AddressInput } from '../AddressInput';
+export { default as AddressMapSelector } from '../AddressMapSelector';
+export { default as MapWithAddressInput } from '../MapWithAddressInput';
 
 // Hooks
 export { useLocation } from '../../hooks/useLocation';
@@ -20,4 +23,7 @@ export type {
   LocationSelectionResult,
   UseLocationReturn,
   MapSelectorProps,
+  AddressInputProps,
+  AddressMapSelectorProps,
+  GeocodeResult,
 } from '../../types/location';

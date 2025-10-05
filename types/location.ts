@@ -29,6 +29,7 @@ export interface UseLocationReturn {
   error: string | null;
   getCurrentLocation: () => Promise<void>;
   reverseGeocode: (coordinates: LocationCoordinates) => Promise<LocationSelectionResult>;
+  geocodeAddress: (address: string) => Promise<LocationSelectionResult[]>;
 }
 
 export interface MapSelectorProps {
@@ -38,4 +39,28 @@ export interface MapSelectorProps {
   markerTitle?: string;
   markerDescription?: string;
   style?: object;
+}
+
+export interface AddressInputProps {
+  onAddressSelect: (location: LocationSelectionResult) => void;
+  placeholder?: string;
+  initialValue?: string;
+  showSuggestions?: boolean;
+  style?: object;
+  inputStyle?: object;
+}
+
+export interface AddressMapSelectorProps {
+  onLocationSelect: (location: LocationSelectionResult) => void;
+  initialRegion?: MapRegion;
+  showCurrentLocationButton?: boolean;
+  showAddressInput?: boolean;
+  placeholder?: string;
+  style?: object;
+}
+
+export interface GeocodeResult {
+  address: string;
+  coordinates: LocationCoordinates;
+  name: string;
 }

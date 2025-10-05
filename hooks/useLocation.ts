@@ -59,6 +59,41 @@ export const useLocation = (): UseLocationReturn => {
   }, []);
 
   /**
+   * Realiza geocodificación directa para convertir dirección en coordenadas
+   */
+  const geocodeAddress = useCallback(async (
+    address: string
+  ): Promise<LocationSelectionResult[]> => {
+    try {
+      const geocodeResults = await Location.geocodeAsync(address);
+
+      if (geocodeResults.length > 0) {
+        const results: LocationSelectionResult[] = [];
+
+        for (const result of geocodeResults) {
+          const coordinates: LocationCoordinates = {
+            latitude: result.latitude,
+            longitude: result.longitude,
+          };
+
+          // Obtener información detallada mediante geocodificación reversa
+          const detailedInfo = await reverseGeocode(coordinates);
+          results.push(detailedInfo);
+        }
+
+        return results;
+      }
+
+      // Si no hay resultados, devolver array vacío
+      return [];
+
+    } catch (err) {
+      console.error('Error en geocodificación directa:', err);
+      throw new Error('No se pudo encontrar la dirección especificada');
+    }
+  }, []);
+
+  /**
    * Realiza geocodificación reversa para obtener información de una ubicación
    */
   const reverseGeocode = useCallback(async (
@@ -131,5 +166,6 @@ export const useLocation = (): UseLocationReturn => {
     error,
     getCurrentLocation,
     reverseGeocode,
+    geocodeAddress,
   };
 };

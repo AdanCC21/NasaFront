@@ -23,10 +23,11 @@ const StackLayout = () => {
     screenOptions={{
         headerShadowVisible: true,
         contentStyle: {
-            flex: 1
+            flex: 1,
+            
         },
-        headerLeft: ({tintColor,canGoBack}) => (<Ionicons 
-        name={canGoBack ? "arrow-back-outline":"menu-outline"} size={26} className='mr-5' 
+        headerLeft: ({canGoBack}) => (<Ionicons 
+        name={canGoBack ? "chevron-back":"menu"} size={32} className='mr-5' color={"#fff"} 
             onPress={() => onHeaderLeftClick(canGoBack)}
         />
         )
@@ -44,7 +45,28 @@ const StackLayout = () => {
         <Stack.Screen name="map/index"
         options={{
             title: "Mapa",
+            headerTransparent: true,
             headerStyle:{
+
+            },
+            headerTitleStyle:{
+                color: '#fff',
+                fontWeight: 'bold',
+                fontSize: 28,
+                
+            }
+        }} />
+        <Stack.Screen name="map/dateHour/index"
+        options={{
+            title: "Fecha y hora",
+            headerTransparent: true,
+            headerStyle:{
+
+            },
+            headerTitleStyle:{
+                color: '#fff',
+                fontWeight: 'bold',
+                fontSize: 28,
                 
             }
         }} />
