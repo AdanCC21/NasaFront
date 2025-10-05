@@ -37,11 +37,6 @@ const StackLayout = () => {
                     options={{
                         headerShown: false
                     }} />
-                <Stack.Screen name="plan/index"
-                    options={{
-                        title: "Plan",
-                    }} />
-
                 <Stack.Screen name="map/index"
                     options={{
                         title: "Map",
@@ -71,14 +66,14 @@ const StackLayout = () => {
                     }} />
                 <Stack.Screen name="chat/index"
                     options={{
-                        title: "Chat",
-                        headerTitleStyle: { color: '#FFF' },
+                        title: "Ramon",
+                        headerTitleStyle: { color: "#FFF", fontSize: 28, fontWeight: 'bold' },
                         headerTransparent: true
                     }} />
                 <Stack.Screen name="historial/index"
                     options={{
                         title: "History",
-                        headerTitleStyle: { color: "#FFF" },
+                        headerTitleStyle: { color: "#FFF", fontSize: 28, fontWeight: 'bold' },
                         headerTransparent: true
                     }}
                 />
