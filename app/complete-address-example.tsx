@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { 
-  AddressInput, 
-  AddressMapSelector, 
-  LocationPreview 
+import React, { useState } from 'react';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  AddressInput,
+  AddressMapSelector,
+  LocationPreview
 } from '../componentes/maps';
 import { LocationSelectionResult } from '../types/location';
 
@@ -102,7 +102,7 @@ const CompleteAddressExampleScreen: React.FC = () => {
           onLocationSelect={handleHybridSelect}
           showCurrentLocationButton={true}
           showAddressInput={true}
-          placeholder="Buscar dirección completa..."
+          placeholder="Search for an address in the map..."
           style={styles.hybridSelector}
         />
       </SafeAreaView>
