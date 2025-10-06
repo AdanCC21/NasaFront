@@ -1,6 +1,6 @@
 // Configuración de la API
 export const API_CONFIG = {
-    BASE_URL: 'http://192.168.1.69:8000',
+    BASE_URL: 'http://10.41.89.248:8000',
     TIMEOUT: 30000,
     ENDPOINTS: {
         CHAT: '/chat/simple/',

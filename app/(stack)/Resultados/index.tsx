@@ -324,18 +324,12 @@ const ResultadosScreen = () => {
     <View className='flex-1 bg-blue-900'>
       {weatherData && getWeatherBackground(weatherData)}
 
-      <View className='flex-row items-center justify-end px-4 py-3' style={{ paddingTop: safeAreaInsets.top }}>
-        <TouchableOpacity>
-          <Feather name="download" size={28} color="white" />
-        </TouchableOpacity>
-      </View>
-
       <ScrollView
         className='flex-1'
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
       >
-        <View className='flex-1 items-center justify-start w-full px-4'>
+        <View className='flex-1 items-center justify-start w-full px-4' style={{ paddingTop: safeAreaInsets.top + 30 }}>
           {weatherData && (
             <>
               {/* Weather Icon y Ramon lado a lado */}
@@ -343,7 +337,7 @@ const ResultadosScreen = () => {
                 <Ionicons name={getWeatherIcon(weatherData)} size={100} color={getIconColor(weatherData)} />
                 <RamonWeather weatherData={weatherData} size={120} />
               </View>
-              
+
               <Text className='text-white text-8xl font-bold'>{weatherData.temperature}°</Text>
               <Text className='text-white text-2xl font-bold'>{getWeatherCondition(weatherData)}</Text>
               <Text className='text-white text-2xl font-bold'>Max: {weatherData.maxTemp}° Min: {weatherData.minTemp}°</Text>

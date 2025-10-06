@@ -12,6 +12,8 @@ import { router, useNavigation } from "expo-router";
 import { useEffect, useLayoutEffect, useState } from "react";
 import {
   Alert,
+  KeyboardAvoidingView,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -161,158 +163,117 @@ const DateHourScreen = () => {
       end={{ x: 0, y: 1 }}
     >
       <CloudsBackground />
-      <ScrollView
-        style={[styles.container, { paddingTop: safeArea.top + 50 }]}
-        showsVerticalScrollIndicator={false}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
       >
-        {/* Mapa más pequeño */}
-        <View style={styles.mapContainer} >
-          <Text className="text-white text-2xl font-bold pb-2">
-            Location selected:
-          </Text>
-          {eventData.location ? (
-            <MapWithAddressInput
-              onLocationSelect={() => {}}
-              initialLocation={eventData.location}
-              initialRegion={{
-                latitude: eventData.location.coordinates.latitude,
-                longitude: eventData.location.coordinates.longitude,
-                latitudeDelta: 0.01,
-                longitudeDelta: 0.01,
-              }}
-              showCurrentLocationButton={false}
-              showAddressInput={false}
-              interactive={false}
-              showSelectedLocation={false}
-              style={{ flex: 1 }}
-            />
-          ) : (
-            <View
-              style={{
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "rgba(255,255,255,0.1)",
-                borderRadius: 24,
-              }}
-            >
-              <Text style={{ color: "#fff", fontSize: 16 }}>
-                No location selected
+        <ScrollView
+          style={[styles.container, { paddingTop: safeArea.top + 50 }]}
+          contentContainerStyle={{ paddingBottom: safeArea.bottom + 100 }}
+          showsVerticalScrollIndicator={false}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+        >
+          {/* Mapa más pequeño */}
+          <View style={styles.mapContainer} >
+            <Text className="text-white text-2xl font-bold pb-2">
+              Location selected:
+            </Text>
+            {eventData.location ? (
+              <MapWithAddressInput
+                onLocationSelect={() => { }}
+                initialLocation={eventData.location}
+                initialRegion={{
+                  latitude: eventData.location.coordinates.latitude,
+                  longitude: eventData.location.coordinates.longitude,
+                  latitudeDelta: 0.01,
+                  longitudeDelta: 0.01,
+                }}
+                showCurrentLocationButton={false}
+                showAddressInput={false}
+                interactive={false}
+                showSelectedLocation={false}
+                style={{ flex: 1 }}
+              />
+            ) : (
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor: "rgba(255,255,255,0.1)",
+                  borderRadius: 24,
+                }}
+              >
+                <Text style={{ color: "#fff", fontSize: 16 }}>
+                  No location selected
+                </Text>
+              </View>
+            )}
+
+            {/* MessageBot superpuesto al mapa */}
+            <View style={styles.messageBotContainer}>
+              <MessageBot
+                imgUrl="Bot.png"
+                message="Perfect! Now select the date and time of the event."
+              />
+            </View>
+          </View>
+
+          {/* Formularios de fecha y hora */}
+          <View style={styles.formContainer}>
+            <View>
+              <Text className="text-white text-2xl font-bold pb-2">Date</Text>
+              <DatePicker
+                value={selectedDate}
+                onChange={setSelectedDateLocal}
+                placeholder="Select a date"
+              />
+            </View>
+
+            <View>
+              <Text className="text-white text-2xl font-bold pb-2">
+                In what time period will you be making your plans?
               </Text>
-            </View>
-          )}
-
-          {/* MessageBot superpuesto al mapa */}
-          <View style={styles.messageBotContainer}>
-            <MessageBot
-              imgUrl="Bot.png"
-              message="Perfect! Now select the date and time of the event."
-            />
-          </View>
-        </View>
-
-        {/* Formularios de fecha y hora */}
-        <View style={styles.formContainer}>
-          <View>
-            <Text className="text-white text-2xl font-bold pb-2">Date</Text>
-            <DatePicker
-              value={selectedDate}
-              onChange={setSelectedDateLocal}
-              placeholder="Select a date"
-            />
-          </View>
-
-          <View>
-            <Text className="text-white text-2xl font-bold pb-2">
-              In what time period will you be making your plans?
-            </Text>
-            <TimeDropdown
-              value={startTime}
-              onSelect={(period: TimePeriod) => setStartTimeLocal(period.value)}
-              placeholder="Select time period"
-            />
-          </View>
-
-          <View>
-            <Text className="text-white text-2xl font-bold pb-2">
-              Tell me about your plan!
-            </Text>
-            <TextInput
-              style={styles.textInput}
-              value={plan}
-              onChangeText={setPlanLocal}
-              placeholder="Describe your plan here..."
-              placeholderTextColor="rgba(255,255,255,0.5)"
-              multiline
-              numberOfLines={4}
-              textAlignVertical="top"
-            />
-          </View>
-
-          <View>
-            <Text className="text-white text-2xl font-bold pb-2">
-                What metrics do you want to include?
-            </Text>
-            <View style={styles.metricsContainer}>
-              <VariablePill
-                icon={<Ionicons name="thermometer" size={20} color={metrics.temperature ? "#fff" : "rgba(255,255,255,0.6)"} />}
-                texto="Temperature"
-                color="#FF6B6B"
-                textColor="#fff"
-                selected={metrics.temperature}
-                onPress={() => toggleMetric('temperature')}
-              />
-              <VariablePill
-                icon={<Ionicons name="water" size={20} color={metrics.precipitation ? "#fff" : "rgba(255,255,255,0.6)"} />}
-                texto="Precipitation"
-                color="#0077FF"
-                textColor="#fff"
-                selected={metrics.precipitation}
-                onPress={() => toggleMetric('precipitation')}
-              />
-              <VariablePill
-                icon={<Ionicons name="cloud" size={20} color={metrics.humidity ? "#fff" : "rgba(255,255,255,0.6)"} />}
-                texto="Humidity"
-                color="#95E1D3"
-                textColor="#fff"
-                selected={metrics.humidity}
-                onPress={() => toggleMetric('humidity')}
-              />
-              <VariablePill
-                icon={<Ionicons name="sunny" size={20} color={metrics.radiation ? "#fff" : "rgba(255,255,255,0.6)"} />}
-                texto="Solar Radiation"
-                color="#aa0000"
-                textColor="#fff"
-                selected={metrics.radiation}
-                onPress={() => toggleMetric('radiation')}
+              <TimeDropdown
+                value={startTime}
+                onSelect={(period: TimePeriod) => setStartTimeLocal(period.value)}
+                placeholder="Select time period"
               />
             </View>
-          </View>
-        </View>
 
-        {/* Botón de continuar */}
-        <View style={styles.buttonContainer}>
-          <CustomButton
-            icon="chatbubble-ellipses-outline"
-            iconPosition="left"
-            children="Chat"
-            color="#4684FF"
-            onPress={() => router.push("/(stack)/chat")}
-            className="mt-2"
-            disabled={!isChatEnabled}
-          />
-          <CustomButton
-            icon="send"
-            iconPosition="right"
-            children="Send"
-            color="#4684FF"
-            onPress={handleContinue}
-            className="mt-2"
-          />
-        </View>
-      </ScrollView>
+            <View>
+              <Text className="text-white text-2xl font-bold pb-2">
+                Tell me about your plan!
+              </Text>
+              <TextInput
+                style={styles.textInput}
+                value={plan}
+                onChangeText={setPlanLocal}
+                placeholder="Describe your plan here..."
+                placeholderTextColor="rgba(255,255,255,0.5)"
+                multiline
+                numberOfLines={4}
+                textAlignVertical="top"
+              />
+            </View>
+
+          </View>
+
+          {/* Botón de continuar */}
+          <View style={styles.buttonContainer}>
+            <CustomButton
+              icon="send"
+              iconPosition="right"
+              children="Send"
+              color="#4684FF"
+              onPress={handleContinue}
+              className="mt-2"
+            />
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </LinearGradient>
   );
 };

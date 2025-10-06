@@ -142,16 +142,19 @@ const PlanScreen = () => {
         </View>
       )}
 
-      <FlatList
-        className='mx-[5vw]'
-        data={messageList}
-        keyExtractor={item => String(item.id)}
-        renderItem={({ item, index }) => <MessageItem item={item} index={index} />}
-        contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end' }}
-      />
-
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}      >
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? headerHeight : 0}
+      >
+        <FlatList
+          className='mx-[5vw]'
+          data={messageList}
+          keyExtractor={item => String(item.id)}
+          renderItem={({ item, index }) => <MessageItem item={item} index={index} />}
+          contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end' }}
+        />
+
         <View style={styles.inputContent}>
           <View className='flex-row items-center gap-x-2 mx-2 mt-2'>
             <Ionicons name="information-circle-outline" size={14} color="white" />
