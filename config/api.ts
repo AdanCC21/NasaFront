@@ -4,7 +4,7 @@ export const API_CONFIG = {
     TIMEOUT: 30000,
     ENDPOINTS: {
         CHAT: '/chat/simple/',
-        WEATHER_PREDICTION: '/predict/weather/',
+        WEATHER_PREDICTION: '/predict/weather',  // Sin slash final
         GENERATE_CSV: '/csv/generate-csv/',
         DOWNLOAD_CSV: '/csv/download-csv/',
     }

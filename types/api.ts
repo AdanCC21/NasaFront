@@ -37,6 +37,7 @@ export interface SimpleChatRequest {
         address: string;
     };
     current_time?: string;
+    weather_data?: any; // Datos meteorológicos completos de la predicción
 }
 
 export interface ChatResponse {

@@ -16,6 +16,8 @@ export interface EventData {
     humidity: boolean;
     radiation: boolean;
   };
+  weatherData: any | null; // Datos meteorológicos completos de la predicción
+  recommendations: string[]; // Recomendaciones generadas
 }
 
 /**
@@ -29,6 +31,8 @@ interface EventContextType {
   setEndTime: (time: string) => void;
   setPlan: (plan: string) => void;
   setMetrics: (metrics: { temperature: boolean; precipitation: boolean; humidity: boolean; radiation: boolean }) => void;
+  setWeatherData: (data: any) => void;
+  setRecommendations: (recommendations: string[]) => void;
   clearEventData: () => void;
   getFormattedData: () => FormattedEventData | null;
 }
@@ -71,6 +75,8 @@ export const EventProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       humidity: true,
       radiation: true,
     },
+    weatherData: null,
+    recommendations: [],
   });
 
   const setLocation = (location: LocationSelectionResult) => {
@@ -97,6 +103,14 @@ export const EventProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     setEventData((prev) => ({ ...prev, metrics }));
   };
 
+  const setWeatherData = (data: any) => {
+    setEventData((prev) => ({ ...prev, weatherData: data }));
+  };
+
+  const setRecommendations = (recommendations: string[]) => {
+    setEventData((prev) => ({ ...prev, recommendations }));
+  };
+
   const clearEventData = () => {
     setEventData({
       location: null,
@@ -110,6 +124,8 @@ export const EventProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         humidity: false,
         radiation: false,
       },
+      weatherData: null,
+      recommendations: [],
     });
   };
 
@@ -156,6 +172,8 @@ export const EventProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         setEndTime,
         setPlan,
         setMetrics,
+        setWeatherData,
+        setRecommendations,
         clearEventData,
         getFormattedData,
       }}

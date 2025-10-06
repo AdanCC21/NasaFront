@@ -30,13 +30,22 @@ const PlanScreen = () => {
 
     if (eventData.location?.address) {
       const currentTime = new Date().toLocaleString();
-      botMessage.content = `Hi ✌️! I can see you're at: ${eventData.location.address} 🗺️ and it's currently ${currentTime} 🕑. Ask me anything about weather, your plans, or any other topic!`
+      let contextMessage = `Hi ✌️! I can see you're at: ${eventData.location.address} 🗺️ and it's currently ${currentTime} 🕑.`;
+
+      // Si hay datos meteorológicos, mencionar que tenemos información del clima
+      if (eventData.weatherData && eventData.recommendations.length > 0) {
+        contextMessage += ` I also have your latest weather data and recommendations! Ask me anything about the weather conditions, your plans, or any other topic! 🌤️`;
+      } else {
+        contextMessage += ` Ask me anything about weather, your plans, or any other topic!`;
+      }
+
+      botMessage.content = contextMessage;
     }
 
     let list = [...messageList];
     list.push(botMessage);
     setMessage(list)
-  }, [eventData.location])
+  }, [eventData.location, eventData.weatherData])
 
   // Función simplificada para enviar mensaje a ChatGPT con contexto
   const handleMessages = async (userMessage: string) => {
@@ -56,11 +65,12 @@ const PlanScreen = () => {
 
       const currentTime = new Date().toISOString();
 
-      // Enviar prompt a ChatGPT con contexto
+      // Enviar prompt a ChatGPT con contexto completo (incluyendo datos meteorológicos)
       const chatRequest: SimpleChatRequest = {
         prompt: userMessage,
         location: locationContext,
-        current_time: currentTime
+        current_time: currentTime,
+        weather_data: eventData.weatherData // Incluir datos meteorológicos del contexto
       };
       const response = await sendMessage(chatRequest);
 

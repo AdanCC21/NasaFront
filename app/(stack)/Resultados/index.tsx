@@ -12,6 +12,7 @@ import WeatherCard from '../../../componentes/Weathercard';
 import { useWeatherPrediction } from '@/hooks/useAPI';
 import { useEvent } from '@/contexts/EventContext';
 import { Time, Location, WeatherPredictionRequest } from '@/types/api';
+import { router } from 'expo-router';
 
 interface WeatherData {
   temperature: number;
@@ -25,12 +26,13 @@ interface WeatherData {
 
 const ResultadosScreen = () => {
   const safeAreaInsets = useSafeAreaInsets();
-  const { eventData, getFormattedData } = useEvent();
+  const { eventData, getFormattedData, setWeatherData: setContextWeatherData, setRecommendations: setContextRecommendations } = useEvent();
   const { getWeatherPrediction, loading, error, data } = useWeatherPrediction();
 
   // Estados para almacenar los datos del clima, las recomendaciones y el estado de carga
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [recommendations, setRecommendations] = useState<string>('');
+  const [hasExecuted, setHasExecuted] = useState<boolean>(false); // Para evitar ciclos infinitos
 
   // Función para convertir datos del contexto a formato de API
   const prepareWeatherRequest = (): WeatherPredictionRequest | null => {
@@ -194,6 +196,17 @@ const ResultadosScreen = () => {
 
   // useEffect se ejecuta una vez cuando el componente se monta para buscar los datos
   useEffect(() => {
+    // Evitar ejecuciones múltiples y verificar que tengamos los datos necesarios
+    if (hasExecuted || !eventData.location || !eventData.date || !eventData.startTime || loading) {
+      return;
+    }
+
+    // Si ya tenemos datos meteorológicos en el contexto, no hacer nueva consulta
+    if (eventData.weatherData && weatherData) {
+      console.log('🔄 Datos ya disponibles, evitando nueva consulta');
+      return;
+    }
+
     const fetchWeatherData = async () => {
       const requestData = prepareWeatherRequest();
 
@@ -201,6 +214,9 @@ const ResultadosScreen = () => {
         console.error('No hay datos suficientes para hacer la petición');
         return;
       }
+
+      // Marcar como ejecutado ANTES de hacer la consulta
+      setHasExecuted(true);
 
       // Log de los datos que se envían al backend
       console.log('📤 Enviando datos al backend:', JSON.stringify(requestData, null, 2));
@@ -212,6 +228,9 @@ const ResultadosScreen = () => {
         const localWeatherData = convertAPIDataToLocal(response);
         setWeatherData(localWeatherData);
 
+        // Guardar datos completos en el contexto para el chat
+        setContextWeatherData(response);
+
         // Usar recomendaciones del backend si están disponibles
         console.log('🔍 Revisando recomendaciones:', response.recomendations);
         console.log('🔍 Tipo de recomendaciones:', typeof response.recomendations);
@@ -220,6 +239,7 @@ const ResultadosScreen = () => {
         if (response.recomendations && Array.isArray(response.recomendations)) {
           console.log('✅ Usando recomendaciones del backend:', response.recomendations);
           setRecommendations(response.recomendations.join(' '));
+          setContextRecommendations(response.recomendations);
         } else {
           console.log('⚠️ No hay recomendaciones del backend, generando fallback');
           // Generar recomendaciones básicas como fallback
@@ -244,7 +264,7 @@ const ResultadosScreen = () => {
     };
 
     fetchWeatherData();
-  }, [eventData, getWeatherPrediction]);
+  }, [eventData.location, eventData.date, eventData.startTime, hasExecuted, loading]); // Incluir loading
 
   // Función para generar recomendaciones básicas
   const generateRecommendations = (data: WeatherData) => {
@@ -271,6 +291,7 @@ const ResultadosScreen = () => {
     }
 
     setRecommendations(recs.join(" "));
+    setContextRecommendations(recs);
   };
 
   // Pantalla de carga mientras se obtienen los datos
@@ -357,11 +378,22 @@ const ResultadosScreen = () => {
                   <Text className="font-semibold text-white text-center">{weatherData.windSpeed} km/h</Text>
                 </View>
 
-                <View className="w-[92%] bg-black/20 rounded-2xl p-4 m-1 border border-white/20 mb-8" style={{ backgroundColor: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.2)' }}>
+                <View className="w-[92%] bg-black/20 rounded-2xl p-4 m-1 border border-white/20" style={{ backgroundColor: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.2)' }}>
                   <Text className="text-2xl text-slate-300 text-center mb-3">Recommendations</Text>
                   <View className="items-center">
                     <Text className='text-white text-base text-left leading-7 tracking-wide'>{recommendations}</Text>
                   </View>
+                </View>
+
+                {/* Botón Ask AI debajo de las recomendaciones */}
+                <View className="w-[92%] mt-2 mb-8">
+                  <TouchableOpacity
+                    onPress={() => router.push('/(stack)/chat')}
+                    className='flex-row items-center justify-center bg-white/20 px-4 py-3 rounded-lg border border-white/30'
+                  >
+                    <Ionicons name="chatbubble-outline" size={24} color="white" />
+                    <Text className='text-white text-lg font-medium ml-3'>Continue with AI Chat</Text>
+                  </TouchableOpacity>
                 </View>
               </View>
             </>
