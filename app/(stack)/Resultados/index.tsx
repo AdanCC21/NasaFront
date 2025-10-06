@@ -2,6 +2,7 @@ import CloudsBackground from '@/componentes/CloudsBackground';
 import CloudyBackground from '@/componentes/CloudyBackground';
 import RainyBackground from '@/componentes/RainyBackground';
 import SunnyBackground from '@/componentes/sunny';
+import RamonWeather from '@/componentes/RamonWeather';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import Entypo from '@expo/vector-icons/Entypo';
 import React, { useEffect, useState } from 'react';
@@ -316,7 +317,12 @@ const ResultadosScreen = () => {
         <View className='flex-1 items-center justify-start w-full px-4'>
           {weatherData && (
             <>
-              <Ionicons name={getWeatherIcon(weatherData)} size={100} color={getIconColor(weatherData)} />
+              {/* Weather Icon y Ramon lado a lado */}
+              <View className='flex-row items-center justify-center w-full px-4 mb-4'>
+                <Ionicons name={getWeatherIcon(weatherData)} size={100} color={getIconColor(weatherData)} />
+                <RamonWeather weatherData={weatherData} size={120} />
+              </View>
+              
               <Text className='text-white text-8xl font-bold'>{weatherData.temperature}°</Text>
               <Text className='text-white text-2xl font-bold'>{getWeatherCondition(weatherData)}</Text>
               <Text className='text-white text-2xl font-bold'>Max: {weatherData.maxTemp}° Min: {weatherData.minTemp}°</Text>

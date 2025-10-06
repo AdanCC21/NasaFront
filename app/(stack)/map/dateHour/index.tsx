@@ -9,7 +9,7 @@ import { useEvent } from "@/contexts/EventContext";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { router, useNavigation } from "expo-router";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import {
   Alert,
   ScrollView,
@@ -165,7 +165,7 @@ const DateHourScreen = () => {
         scrollEventThrottle={16}
       >
         {/* Mapa más pequeño */}
-        <View style={styles.mapContainer}>
+        <View style={styles.mapContainer} >
           <Text className="text-white text-2xl font-bold pb-2">
             Location selected:
           </Text>
