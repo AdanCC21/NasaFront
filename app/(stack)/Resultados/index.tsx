@@ -8,6 +8,9 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import WeatherCard from '../../../componentes/Weathercard';
+import { useWeatherPrediction } from '@/hooks/useAPI';
+import { useEvent } from '@/contexts/EventContext';
+import { Time, Location, WeatherPredictionRequest } from '@/types/api';
 
 interface WeatherData {
   temperature: number;
@@ -21,16 +24,73 @@ interface WeatherData {
 
 const ResultadosScreen = () => {
   const safeAreaInsets = useSafeAreaInsets();
-  
-  // Hook para recibir parámetros de la navegación
-  // const params = useLocalSearchParams();
+  const { eventData, getFormattedData } = useEvent();
+  const { getWeatherPrediction, loading, error, data } = useWeatherPrediction();
 
   // Estados para almacenar los datos del clima, las recomendaciones y el estado de carga
   const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
   const [recommendations, setRecommendations] = useState<string>('');
-  const [isLoading, setIsLoading] = useState(true);
 
-  // Función para determinar la condición climática basada en los datos
+  // Función para convertir datos del contexto a formato de API
+  const prepareWeatherRequest = (): WeatherPredictionRequest | null => {
+    const formattedData = getFormattedData();
+    if (!formattedData || !eventData.location) {
+      return null;
+    }
+
+    // Convertir fecha y hora al formato requerido por la API
+    const eventDate = new Date(formattedData.date);
+
+    // Extraer solo la hora de los timestamps ISO
+    const startTime = new Date(formattedData.time_start);
+    const endTime = new Date(formattedData.end_time);
+
+    const timeData: Time = {
+      day: eventDate.getDate(),
+      month: eventDate.getMonth() + 1, // getMonth() retorna 0-11
+      start_time: startTime.toTimeString().substring(0, 5), // "HH:mm" format
+      end_time: endTime.toTimeString().substring(0, 5), // "HH:mm" format
+    };
+
+    const locationData: Location = {
+      lat: formattedData.latitude,
+      lon: formattedData.longitude,
+    };
+
+    return {
+      time: timeData,
+      location: locationData,
+    };
+  };
+
+  // Función para convertir datos de la API al formato local
+  const convertAPIDataToLocal = (apiData: any): WeatherData => {
+    // La respuesta del backend tiene la estructura: { data: { summary: {...}, data: [...] }, recomendations: [...] }
+    const summary = apiData.data?.summary || apiData.summary || apiData;
+
+    // Función helper para convertir Kelvin a Celsius
+    const kelvinToCelsius = (kelvin: number): number => {
+      return Math.round(kelvin - 273.15);
+    };
+
+    // Convertir humedad específica a porcentaje relativo (aproximación)
+    const specificToRelativeHumidity = (specificHumidity: number): number => {
+      // Conversión más precisa de humedad específica (kg/kg) a humedad relativa (%)
+      // Para humedad específica típica de 0.01-0.02, esto da ~70-90% de humedad relativa
+      const relativeHumidity = specificHumidity * 7000; // Factor de conversión ajustado
+      return Math.min(Math.max(Math.round(relativeHumidity), 0), 100);
+    };
+
+    return {
+      temperature: kelvinToCelsius(summary.temperatura || 293.15), // Default ~20°C
+      maxTemp: kelvinToCelsius(summary.temperatura_max || summary.temperatura || 298.15), // Default ~25°C
+      minTemp: kelvinToCelsius(summary.temperatura_min || summary.temperatura || 288.15), // Default ~15°C
+      precipitation: Math.round((summary.precipitacion || 0) * 100), // Convertir a porcentaje
+      humidity: specificToRelativeHumidity(summary.humedad || 0.5), // Convertir humedad específica
+      solarRadiation: Math.round(summary.radiacion_solar || 500),
+      windSpeed: Math.round(summary.velocidad_viento || 5),
+    };
+  };  // Función para determinar la condición climática basada en los datos
   const getWeatherCondition = (data: WeatherData) => {
     if (data.precipitation >= 70) return 'Rainy';
     if (data.precipitation >= 30) return 'Cloudy';
@@ -132,73 +192,87 @@ const ResultadosScreen = () => {
 
   // useEffect se ejecuta una vez cuando el componente se monta para buscar los datos
   useEffect(() => {
-    const fetchWeatherData = async () => { // esto no va acaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
-      const requestBody = {
-        time: {
-          // day: parseInt(day as string),
-          // month: parseInt(month as string),
-          // start_time: startTime as string,
-          // end_time: endTime as string,
-          
-          // Datos de ejemplo para prueba:
-          day: 10,
-          month: 4,
-          start_time: "14:30",
-          end_time: "15:30"
-        },
-        location: {
-          // latitud: parseFloat(lat as string),
-          // longitud: parseFloat(lon as string),
-          
-          // Datos de ejemplo para prueba:
-          latitud: 40.4168,
-          longitud: -3.7038
-        }
-      };
+    const fetchWeatherData = async () => {
+      const requestData = prepareWeatherRequest();
+
+      if (!requestData) {
+        console.error('No hay datos suficientes para hacer la petición');
+        return;
+      }
+
+      // Log de los datos que se envían al backend
+      console.log('📤 Enviando datos al backend:', JSON.stringify(requestData, null, 2));
 
       try {
-        const response = await fetch('http://127.0.0.1', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(requestBody),
-        });
+        const response = await getWeatherPrediction(requestData);
+        console.log('📥 Respuesta del backend:', JSON.stringify(response, null, 2));
 
-        if (!response.ok) {
-          throw new Error(`Error en la respuesta del servidor: ${response.status}`);
+        const localWeatherData = convertAPIDataToLocal(response);
+        setWeatherData(localWeatherData);
+
+        // Usar recomendaciones del backend si están disponibles
+        console.log('🔍 Revisando recomendaciones:', response.recomendations);
+        console.log('🔍 Tipo de recomendaciones:', typeof response.recomendations);
+        console.log('🔍 Es array?:', Array.isArray(response.recomendations));
+
+        if (response.recomendations && Array.isArray(response.recomendations)) {
+          console.log('✅ Usando recomendaciones del backend:', response.recomendations);
+          setRecommendations(response.recomendations.join(' '));
+        } else {
+          console.log('⚠️ No hay recomendaciones del backend, generando fallback');
+          // Generar recomendaciones básicas como fallback
+          generateRecommendations(localWeatherData);
         }
 
-        const data = await response.json();
-
-        // Asumiendo que el backend devuelve un objeto con `weather` y `recommendations`
-        setWeatherData(data.weather);
-        setRecommendations(data.recommendations || 'No recommendations available.');
-
       } catch (error) {
-        console.error("Error al obtener los datos del clima:", error);
-        setRecommendations('Could not load data. Check server connection.');
-        
-        // Datos de fallback en caso de error
-        setWeatherData({
-          temperature: 18,
+        console.error('Error fetching weather data:', error);
+        // En caso de error, usar datos de ejemplo
+        const fallbackData: WeatherData = {
+          temperature: 22,
           maxTemp: 25,
-          minTemp: 15,
-          precipitation: 85,
-          humidity: 72,
-          solarRadiation: 850,
-          windSpeed: 24
-        });
-      } finally {
-        setIsLoading(false); // Termina la carga, ya sea con éxito o error
+          minTemp: 18,
+          precipitation: 10,
+          humidity: 65,
+          solarRadiation: 600,
+          windSpeed: 8,
+        };
+        setWeatherData(fallbackData);
+        generateRecommendations(fallbackData);
       }
     };
 
     fetchWeatherData();
-  }, []); // El array vacío `[]` significa que se ejecuta solo una vez al montar el componente
+  }, [eventData, getWeatherPrediction]);
+
+  // Función para generar recomendaciones básicas
+  const generateRecommendations = (data: WeatherData) => {
+    let recs = [];
+
+    if (data.precipitation > 50) {
+      recs.push("High chance of rain - bring an umbrella!");
+    }
+    if (data.temperature > 30) {
+      recs.push("Very hot - stay hydrated and seek shade.");
+    }
+    if (data.temperature < 10) {
+      recs.push("Cold weather - dress warmly.");
+    }
+    if (data.windSpeed > 15) {
+      recs.push("Strong winds expected - secure loose items.");
+    }
+    if (data.solarRadiation > 800) {
+      recs.push("High UV radiation - use sunscreen.");
+    }
+
+    if (recs.length === 0) {
+      recs.push("Perfect weather conditions for your activities!");
+    }
+
+    setRecommendations(recs.join(" "));
+  };
 
   // Pantalla de carga mientras se obtienen los datos
-  if (isLoading) {
+  if (loading) {
     return (
       <View className='flex-1 bg-blue-900 items-center justify-center'>
         <ActivityIndicator size="large" color="white" />
@@ -213,8 +287,8 @@ const ResultadosScreen = () => {
       <View className='flex-1 bg-blue-900 items-center justify-center px-4'>
         <Ionicons name="cloud-offline" size={100} color="white" />
         <Text className='text-white text-xl text-center mt-4'>Unable to load weather data</Text>
-        <TouchableOpacity 
-          onPress={() => router.push('/home')}
+        <TouchableOpacity
+          onPress={() => {/* router.push('/home') */ }}
           className='mt-4 bg-white/20 px-6 py-3 rounded-lg'
         >
           <Text className='text-white font-bold'>Go Back</Text>
@@ -229,11 +303,11 @@ const ResultadosScreen = () => {
 
       <View className='flex-row items-center justify-end px-4 py-3' style={{ paddingTop: safeAreaInsets.top }}>
 
-              <TouchableOpacity
-              >
-                <Feather name="download" size={28} color="white" />
-              </TouchableOpacity>
-            </View>
+        <TouchableOpacity
+        >
+          <Feather name="download" size={28} color="white" />
+        </TouchableOpacity>
+      </View>
 
       <View className='flex-1 items-center justify-start w-full'>
         {weatherData && (
@@ -254,14 +328,14 @@ const ResultadosScreen = () => {
                 value={`${weatherData.humidity}%`}
                 iconName={getHumidityIcon(weatherData.humidity)}
               />
-              
+
               <WeatherCard
                 title="Solar Radiation"
                 value={`${weatherData.solarRadiation} W/m² (${getSolarRadiationLevel(weatherData.solarRadiation)})`}
                 iconName={getSolarRadiationIcon(weatherData.solarRadiation)}
               />
-              
-              <View className="w-[45%] bg-white rounded-2xl p-3 m-1 border border-white/20" style={{backgroundColor: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.2)'}}>
+
+              <View className="w-[45%] bg-white rounded-2xl p-3 m-1 border border-white/20" style={{ backgroundColor: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.2)' }}>
                 <Text className="text-xs text-slate-300 text-center mb-1">Wind Speed</Text>
                 <View className="items-center mb-2">
                   {typeof getWindIcon(weatherData.windSpeed) === 'string' ? (
@@ -272,8 +346,8 @@ const ResultadosScreen = () => {
                 </View>
                 <Text className="font-semibold text-white text-center">{weatherData.windSpeed} km/h</Text>
               </View>
-              
-              <View className="w-[92%] bg-black/20 rounded-2xl p-3 m-1 border border-white/20" style={{backgroundColor: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.2)'}}>
+
+              <View className="w-[92%] bg-black/20 rounded-2xl p-3 m-1 border border-white/20" style={{ backgroundColor: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.2)' }}>
                 <Text className="text-2xl text-slate-300 text-center">Recommendations</Text>
                 <View className="items-center my-2">
                   <Text className='text-white text-base text-center leading-6'>{recommendations}</Text>

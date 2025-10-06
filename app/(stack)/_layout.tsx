@@ -70,13 +70,6 @@ const StackLayout = () => {
                         headerTitleStyle: { color: "#FFF", fontSize: 28, fontWeight: 'bold' },
                         headerTransparent: true
                     }} />
-                <Stack.Screen name="historial/index"
-                    options={{
-                        title: "History",
-                        headerTitleStyle: { color: "#FFF", fontSize: 28, fontWeight: 'bold' },
-                        headerTransparent: true
-                    }}
-                />
                 <Stack.Screen name="Resultados/index"
                     options={{
                         title: "Results",

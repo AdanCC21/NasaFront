@@ -34,22 +34,6 @@ export default function HomeScreen() {
             onPress={() => router.push("/map")}
             className="mt-2"
           />
-          <MenuButton
-            title="Chat with Ramon"
-            description="Talk to Ramon about the weather."
-            icon="chatbubble-ellipses-sharp"
-            color="#0DE200"
-            onPress={() => router.push("/chat")}
-            className="overflow-hidden mt-2"
-          />
-          <MenuButton
-            title="History"
-            description="Check your recent searches."
-            icon="time-outline"
-            color="#1E90FF"
-            onPress={() => router.push("/historial")}
-            className="mt-2"
-          />
         </View>
       </View>
     </LinearGradient>

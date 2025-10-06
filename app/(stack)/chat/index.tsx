@@ -2,11 +2,13 @@ import CloudsBackground from '@/componentes/CloudsBackground';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useEffect, useState } from 'react';
-import { Dimensions, FlatList, Image, Text, TouchableOpacity, View, StyleSheet, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import { Dimensions, FlatList, Image, Text, TouchableOpacity, View, StyleSheet, TextInput, KeyboardAvoidingView, Platform, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ramon from '@/assets/images/Ramon.png'
 import { useHeaderHeight } from '@react-navigation/elements';
 import { useEvent } from '@/contexts/EventContext';
+import { useChat } from '@/hooks/useAPI';
+import { SimpleChatRequest } from '@/types/api';
 
 // --- Tipos ---
 type MessageItemType = {
@@ -18,40 +20,85 @@ type MessageItemType = {
 const PlanScreen = () => {
   const safeAreaInsets = useSafeAreaInsets();
   const { eventData, setDate, setStartTime, setEndTime, getFormattedData } = useEvent();
+  const { sendMessage, loading, error } = useChat();
 
   const [messageList, setMessage] = useState<Array<MessageItemType>>([])
   const [message, setMessageText] = useState('');
 
   useEffect(() => {
-    let botMessage: MessageItemType = { id: messageList.length, author: 'Ramon', content: "Hi, welcome ✌️, please tell me your plans and how can i help you 😺." }
+    let botMessage: MessageItemType = { id: messageList.length, author: 'Ramon', content: "Hi, welcome ✌️! Ask me anything - I'll use your current location and time to give you better answers! 😺" }
 
     if (eventData.location?.address) {
-      botMessage.content = `Hi ✌️, This is your place : ${eventData.location.address} 🗺️. your day : ${getFormattedData()?.date} 📅, and your start time ${eventData.startTime} 🕑`
+      const currentTime = new Date().toLocaleString();
+      botMessage.content = `Hi ✌️! I can see you're at: ${eventData.location.address} 🗺️ and it's currently ${currentTime} 🕑. Ask me anything about weather, your plans, or any other topic!`
     }
 
     let list = [...messageList];
     list.push(botMessage);
     setMessage(list)
-  }, [])
+  }, [eventData.location])
 
-  // Aqui integramos un hook o algo parecido para agregar el mensaje de Chat GPT
-  const handleMessages = (message: string) => {
-    const newItem: MessageItemType = { id: messageList.length + 1, author: 'User', content: message }
-
-    // Respuesta del bot
-    let botMessage: MessageItemType = { id: messageList.length + 2, author: 'Ramon', content: "I don't think it's a good idea to go fishing, there will be strong winds and a high probability of rain. 😿" }
-
-    // Empujamos el item
+  // Función simplificada para enviar mensaje a ChatGPT con contexto
+  const handleMessages = async (userMessage: string) => {
+    // Agregar mensaje del usuario a la lista
+    let userMsgItem: MessageItemType = { id: messageList.length + 1, author: 'User', content: userMessage };
     let list = [...messageList];
-    list.push(newItem);
-    list.push(botMessage);
-    setMessage(list)
-  }
+    list.push(userMsgItem);
+    setMessage(list);
+
+    try {
+      // Preparar contexto de ubicación y tiempo
+      const locationContext = eventData.location ? {
+        lat: eventData.location.coordinates.latitude,
+        lon: eventData.location.coordinates.longitude,
+        address: eventData.location.address || 'Unknown location'
+      } : undefined;
+
+      const currentTime = new Date().toISOString();
+
+      // Enviar prompt a ChatGPT con contexto
+      const chatRequest: SimpleChatRequest = {
+        prompt: userMessage,
+        location: locationContext,
+        current_time: currentTime
+      };
+      const response = await sendMessage(chatRequest);
+
+      // Procesar respuesta del backend
+      let responseText = "I received your message! 🌤️";
+
+      if (response && response.response) {
+        responseText = response.response;
+      }
+
+      const botMessage: MessageItemType = {
+        id: messageList.length + 2,
+        author: 'Ramon',
+        content: responseText
+      };
+
+      list.push(botMessage);
+      setMessage([...list]);
+
+    } catch (error) {
+      console.error('Error sending message:', error);
+
+      // Mensaje de error si falla la API
+      const errorMessage: MessageItemType = {
+        id: messageList.length + 2,
+        author: 'Ramon',
+        content: "Sorry, I'm having trouble connecting right now. Please try again in a moment. 😿"
+      };
+
+      list.push(errorMessage);
+      setMessage([...list]);
+    }
+  };
 
   // Limpiar input
-  const handleSend = () => {
-    if (message.trim()) {
-      handleMessages(message);
+  const handleSend = async () => {
+    if (message.trim() && !loading) {
+      await handleMessages(message);
       setMessageText('');
     }
   };
@@ -68,6 +115,22 @@ const PlanScreen = () => {
 
       <View style={{ height: headerHeight }}>
       </View>
+
+      {/* Barra de contexto */}
+      {eventData.location && (
+        <View className='mx-[5vw] mb-2 bg-white/10 rounded-lg p-3'>
+          <View className='flex-row items-center gap-x-2'>
+            <Ionicons name="location" size={16} color="white" />
+            <Text className='text-white text-xs font-medium flex-1' numberOfLines={1}>
+              {eventData.location.address}
+            </Text>
+            <Ionicons name="time" size={16} color="white" />
+            <Text className='text-white text-xs'>
+              {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            </Text>
+          </View>
+        </View>
+      )}
 
       <FlatList
         className='mx-[5vw]'
