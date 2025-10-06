@@ -4,9 +4,9 @@ import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import MapView, { Marker, Region } from 'react-native-maps';
 import { useLocation } from '../hooks/useLocation';
 import {
-  LocationCoordinates,
-  LocationSelectionResult,
-  MapRegion
+    LocationCoordinates,
+    LocationSelectionResult,
+    MapRegion
 } from '../types/location';
 import AddressInput from './AddressInput';
 
