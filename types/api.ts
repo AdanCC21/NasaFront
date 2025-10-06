@@ -47,6 +47,7 @@ export interface ChatResponse {
 export interface WeatherPredictionRequest {
     time: Time;
     location: Location;
+    plan?: string;
 }
 
 export interface WeatherPredictionResponse {

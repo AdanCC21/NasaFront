@@ -5,7 +5,7 @@ import SunnyBackground from '@/componentes/sunny';
 import { Feather, Ionicons } from '@expo/vector-icons';
 import Entypo from '@expo/vector-icons/Entypo';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Text, TouchableOpacity, View, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import WeatherCard from '../../../componentes/Weathercard';
 import { useWeatherPrediction } from '@/hooks/useAPI';
@@ -60,6 +60,7 @@ const ResultadosScreen = () => {
     return {
       time: timeData,
       location: locationData,
+      plan: eventData.plan || "",
     };
   };
 
@@ -302,61 +303,65 @@ const ResultadosScreen = () => {
       {weatherData && getWeatherBackground(weatherData)}
 
       <View className='flex-row items-center justify-end px-4 py-3' style={{ paddingTop: safeAreaInsets.top }}>
-
-        <TouchableOpacity
-        >
+        <TouchableOpacity>
           <Feather name="download" size={28} color="white" />
         </TouchableOpacity>
       </View>
 
-      <View className='flex-1 items-center justify-start w-full'>
-        {weatherData && (
-          <>
-            <Ionicons name={getWeatherIcon(weatherData)} size={100} color={getIconColor(weatherData)} />
-            <Text className='text-white text-8xl font-bold'>{weatherData.temperature}°</Text>
-            <Text className='text-white text-2xl font-bold'>{getWeatherCondition(weatherData)}</Text>
-            <Text className='text-white text-2xl font-bold'>Max: {weatherData.maxTemp}° Min: {weatherData.minTemp}°</Text>
+      <ScrollView
+        className='flex-1'
+        contentContainerStyle={{ flexGrow: 1 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View className='flex-1 items-center justify-start w-full px-4'>
+          {weatherData && (
+            <>
+              <Ionicons name={getWeatherIcon(weatherData)} size={100} color={getIconColor(weatherData)} />
+              <Text className='text-white text-8xl font-bold'>{weatherData.temperature}°</Text>
+              <Text className='text-white text-2xl font-bold'>{getWeatherCondition(weatherData)}</Text>
+              <Text className='text-white text-2xl font-bold'>Max: {weatherData.maxTemp}° Min: {weatherData.minTemp}°</Text>
 
-            <View className="mt-4 flex-row flex-wrap justify-center px-4 max-w-[100%] w-full">
-              <WeatherCard
-                title="Precipitation"
-                value={`${weatherData.precipitation}%`}
-                iconName={getPrecipitationIcon(weatherData.precipitation)}
-              />
-              <WeatherCard
-                title="Humidity"
-                value={`${weatherData.humidity}%`}
-                iconName={getHumidityIcon(weatherData.humidity)}
-              />
+              <View className="mt-4 flex-row flex-wrap justify-center max-w-[100%] w-full">
+                <WeatherCard
+                  title="Precipitation"
+                  value={`${weatherData.precipitation}%`}
+                  iconName={getPrecipitationIcon(weatherData.precipitation)}
+                />
+                <WeatherCard
+                  title="Humidity"
+                  value={`${weatherData.humidity}%`}
+                  iconName={getHumidityIcon(weatherData.humidity)}
+                />
 
-              <WeatherCard
-                title="Solar Radiation"
-                value={`${weatherData.solarRadiation} W/m² (${getSolarRadiationLevel(weatherData.solarRadiation)})`}
-                iconName={getSolarRadiationIcon(weatherData.solarRadiation)}
-              />
+                <WeatherCard
+                  title="Solar Radiation"
+                  value={`${weatherData.solarRadiation} W/m² (${getSolarRadiationLevel(weatherData.solarRadiation)})`}
+                  iconName={getSolarRadiationIcon(weatherData.solarRadiation)}
+                />
 
-              <View className="w-[45%] bg-white rounded-2xl p-3 m-1 border border-white/20" style={{ backgroundColor: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.2)' }}>
-                <Text className="text-xs text-slate-300 text-center mb-1">Wind Speed</Text>
-                <View className="items-center mb-2">
-                  {typeof getWindIcon(weatherData.windSpeed) === 'string' ? (
-                    <Ionicons name={getWindIcon(weatherData.windSpeed) as any} size={32} color="white" />
-                  ) : (
-                    getWindIcon(weatherData.windSpeed)
-                  )}
+                <View className="w-[45%] bg-white rounded-2xl p-3 m-1 border border-white/20" style={{ backgroundColor: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.2)' }}>
+                  <Text className="text-xs text-slate-300 text-center mb-1">Wind Speed</Text>
+                  <View className="items-center mb-2">
+                    {typeof getWindIcon(weatherData.windSpeed) === 'string' ? (
+                      <Ionicons name={getWindIcon(weatherData.windSpeed) as any} size={32} color="white" />
+                    ) : (
+                      getWindIcon(weatherData.windSpeed)
+                    )}
+                  </View>
+                  <Text className="font-semibold text-white text-center">{weatherData.windSpeed} km/h</Text>
                 </View>
-                <Text className="font-semibold text-white text-center">{weatherData.windSpeed} km/h</Text>
-              </View>
 
-              <View className="w-[92%] bg-black/20 rounded-2xl p-3 m-1 border border-white/20" style={{ backgroundColor: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.2)' }}>
-                <Text className="text-2xl text-slate-300 text-center">Recommendations</Text>
-                <View className="items-center my-2">
-                  <Text className='text-white text-base text-center leading-6'>{recommendations}</Text>
+                <View className="w-[92%] bg-black/20 rounded-2xl p-4 m-1 border border-white/20 mb-8" style={{ backgroundColor: 'rgba(0,0,0,0.2)', borderColor: 'rgba(255,255,255,0.2)' }}>
+                  <Text className="text-2xl text-slate-300 text-center mb-3">Recommendations</Text>
+                  <View className="items-center">
+                    <Text className='text-white text-base text-left leading-7 tracking-wide'>{recommendations}</Text>
+                  </View>
                 </View>
               </View>
-            </View>
-          </>
-        )}
-      </View>
+            </>
+          )}
+        </View>
+      </ScrollView>
     </View>
   );
 };
